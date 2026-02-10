@@ -179,6 +179,10 @@ Add to `.cursor/mcp.json` (or `.windsurf/mcp.json`):
 
 Add to Claude Desktop's MCP config (Settings → Developer → MCP Servers):
 
+> **Security Note:** Claude Desktop may not support `${VAR}` environment variable expansion.
+> If you must set the token directly, ensure this config file is **NOT committed to Git**.
+> The file is typically stored in your user directory (not in your project), so this is usually safe.
+
 ```json
 {
   "slack-fast-mcp": {

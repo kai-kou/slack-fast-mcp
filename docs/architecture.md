@@ -14,7 +14,7 @@
 
 | 要素 | 選定 | バージョン | 理由 |
 |------|------|-----------|------|
-| 言語 | Go | 1.23+ | 高速起動・シングルバイナリ・クロスプラットフォーム |
+| 言語 | Go | 1.25+ | 高速起動・シングルバイナリ・クロスプラットフォーム |
 | MCP SDK | mcp-go | v0.43.2+ | Go製 MCP SDK。stdio transport サポート |
 | Slack API | slack-go/slack | v0.17.3+ | Go製 Slack API クライアント。REST API サポート |
 | CLI フレームワーク | cobra | v1.8+ | Go標準のCLIフレームワーク。サブコマンド対応 |
@@ -35,35 +35,54 @@ slack-fast-mcp/
 │   ├── config/
 │   │   ├── config.go            # 設定読み込み・マージロジック
 │   │   └── config_test.go
+│   ├── errors/
+│   │   ├── errors.go            # AppError 型・トークンマスキング
+│   │   └── errors_test.go
 │   ├── slack/
 │   │   ├── client.go            # Slack APIクライアント（インターフェース + 実装）
 │   │   ├── client_test.go
 │   │   ├── channel.go           # チャンネル名解決ロジック
-│   │   └── channel_test.go
+│   │   ├── channel_test.go
+│   │   ├── mock_client.go       # モッククライアント（テスト用）
+│   │   └── types.go             # 共通型定義
 │   ├── mcp/
 │   │   ├── server.go            # MCP Server 定義・ツール登録
 │   │   ├── tools.go             # MCP ツールハンドラー実装
-│   │   └── tools_test.go
-│   └── cli/
-│       ├── root.go              # CLI ルートコマンド
-│       ├── post.go              # post サブコマンド
-│       ├── history.go           # history サブコマンド
-│       ├── reply.go             # reply サブコマンド
-│       ├── serve.go             # serve サブコマンド（MCPモード）
-│       └── setup.go             # setup サブコマンド（初期設定ウィザード）
+│   │   ├── tools_test.go
+│   │   └── smoke_test.go        # スモークテスト（MCPプロトコルレベル）
+│   ├── cli/
+│   │   ├── root.go              # CLI ルートコマンド
+│   │   ├── post.go              # post サブコマンド
+│   │   ├── history.go           # history サブコマンド
+│   │   ├── reply.go             # reply サブコマンド
+│   │   ├── serve.go             # serve サブコマンド（MCPモード）
+│   │   ├── setup.go             # setup サブコマンド（初期設定ウィザード）
+│   │   ├── version.go           # version サブコマンド
+│   │   └── cli_test.go          # CLI テスト
+│   └── integration/
+│       └── integration_test.go  # 統合テスト（実Slack環境）
 ├── docs/
-│   ├── requirements.md          # 要件定義
+│   ├── requirements.md          # 要件定義（Single Source of Truth）
 │   ├── architecture.md          # 本ドキュメント
-│   └── slack-app-setup.md       # Slack App セットアップガイド
+│   ├── slack-app-setup.md       # Slack App セットアップガイド
+│   └── testing-strategy.md      # テスト戦略
+├── scripts/
+│   ├── pre-push                 # Git pre-push hook（品質ゲート）
+│   ├── smoke-test.sh            # バイナリスモークテスト
+│   └── integration-test.sh      # 統合テスト実行スクリプト
 ├── .github/
 │   └── workflows/
-│       ├── ci.yml               # CI（テスト・lint）
+│       ├── ci.yml               # CI（lint・test・build）
 │       └── release.yml          # リリース（GoReleaser）
+├── Makefile                     # ビルド・テスト・品質管理
 ├── .goreleaser.yml              # GoReleaser 設定
+├── .golangci.yml                # golangci-lint 設定
+├── .testcoverage.yml            # カバレッジ閾値設定
 ├── go.mod
 ├── go.sum
 ├── LICENSE                      # MIT License
-├── README.md                    # 公開用 README
+├── CONTRIBUTING.md              # コントリビューションガイド
+├── README.md                    # 公開用 README（英語）
 ├── README_ja.md                 # 日本語 README
 └── .gitignore
 ```
@@ -138,6 +157,7 @@ User ← stdout ← CLI ← Command Handler ← Slack Client ← Response
 type Config struct {
     Token          string `json:"token"`
     DefaultChannel string `json:"default_channel"`
+    DisplayName    string `json:"display_name"`
     LogLevel       string `json:"log_level"`
 }
 ```

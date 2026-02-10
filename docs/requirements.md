@@ -150,6 +150,7 @@ MCP Serverの最大のユーザーはLLM（Cursor/Claude等）であるため、
 |-----------|------|------|-----------|------|
 | `channel` | string | No | 設定ファイルのdefault channel | 投稿先チャンネル名 or チャンネルID |
 | `message` | string | Yes | - | 投稿するメッセージ本文（Slack mrkdwn対応） |
+| `display_name` | string | No | 設定ファイルの display_name | 送信者表示名。メッセージ末尾に `#名前` ハッシュタグを付与 |
 
 > **チャンネル未指定時の挙動**: `channel` パラメータ省略かつ `default_channel` 未設定の場合は、エラーを返却する（メッセージ: 「Set default_channel in config or specify the channel parameter」）
 
@@ -244,6 +245,7 @@ MCP Serverの最大のユーザーはLLM（Cursor/Claude等）であるため、
 | `channel` | string | No | 設定ファイルのdefault channel | チャンネル名 or チャンネルID |
 | `thread_ts` | string | Yes | - | 返信先メッセージのタイムスタンプ |
 | `message` | string | Yes | - | 返信メッセージ本文（Slack mrkdwn対応） |
+| `display_name` | string | No | 設定ファイルの display_name | 送信者表示名。メッセージ末尾に `#名前` ハッシュタグを付与 |
 
 > **チャンネル未指定時の挙動**: `slack_post_message` と同様、エラーを返却する。
 
@@ -290,7 +292,8 @@ MCP Serverの最大のユーザーはLLM（Cursor/Claude等）であるため、
 ```json
 {
   "token": "${SLACK_BOT_TOKEN}",
-  "default_channel": "general"
+  "default_channel": "general",
+  "display_name": "my-agent"
 }
 ```
 
@@ -298,6 +301,7 @@ MCP Serverの最大のユーザーはLLM（Cursor/Claude等）であるため、
 |-----------|------|------|------|
 | `token` | string | Yes | Slack Bot User OAuth Token。`${ENV_VAR}` 形式で環境変数参照可 |
 | `default_channel` | string | No | デフォルト投稿チャンネル名 or ID |
+| `display_name` | string | No | デフォルトの送信者表示名。メッセージ末尾に `#名前` ハッシュタグを付与 |
 
 ### 4.3 グローバル設定ファイル（`~/.config/slack-fast-mcp/config.json`）
 
@@ -323,6 +327,7 @@ MCP Serverの最大のユーザーはLLM（Cursor/Claude等）であるため、
 |--------|------|------|
 | `SLACK_BOT_TOKEN` | Slack Bot User OAuth Token | Yes（設定ファイルがない場合） |
 | `SLACK_DEFAULT_CHANNEL` | デフォルトチャンネル | No |
+| `SLACK_DISPLAY_NAME` | デフォルトの送信者表示名 | No |
 | `SLACK_FAST_MCP_LOG_LEVEL` | ログレベル | No |
 
 ### 4.5 セキュリティ考慮

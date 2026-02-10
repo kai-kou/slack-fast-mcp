@@ -179,6 +179,10 @@ echo '{"token":"${SLACK_BOT_TOKEN}","default_channel":"general"}' > .slack-mcp.j
 
 Claude Desktop の MCP 設定（Settings → Developer → MCP Servers）に追加:
 
+> **セキュリティ注記:** Claude Desktop は `${VAR}` 形式の環境変数展開をサポートしていない場合があります。
+> トークンを直接設定する場合は、この設定ファイルが **Git にコミットされないこと**を確認してください。
+> 通常、このファイルはユーザーディレクトリ内（プロジェクト外）に保存されるため問題ありません。
+
 ```json
 {
   "slack-fast-mcp": {
