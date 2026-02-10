@@ -1,0 +1,22 @@
+version: "2"
+
+linters:
+  default: standard
+
+  settings:
+    errcheck:
+      exclude-functions:
+        # fmt print functions to stdout/stderr — errors are not actionable
+        - fmt.Fprint
+        - fmt.Fprintf
+        - fmt.Fprintln
+        - fmt.Print
+        - fmt.Printf
+        - fmt.Println
+
+  exclusions:
+    rules:
+      # Test files: allow unchecked errors for common test utilities
+      - path: _test\.go
+        linters:
+          - errcheck

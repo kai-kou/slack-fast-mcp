@@ -170,7 +170,7 @@ func appendToGitignore(pattern string) error {
 	if err != nil {
 		return err
 	}
-	defer f.Close()
+	defer func() { _ = f.Close() }()
 
 	// 末尾の改行を確認して必要なら追加
 	data, _ := os.ReadFile(".gitignore")
