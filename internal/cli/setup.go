@@ -9,6 +9,9 @@ import (
 	"strings"
 
 	"github.com/spf13/cobra"
+	"golang.org/x/term"
+
+	apperr "github.com/kai-kou/slack-fast-mcp/internal/errors"
 )
 
 // newSetupCmd は setup サブコマンドを作成する。
@@ -55,12 +58,22 @@ func runSetup(cmd *cobra.Command, args []string) error {
 		return nil
 	}
 
-	// Step 2: Bot Token 入力
+	// Step 2: Bot Token 入力（エコーバックなし）
 	fmt.Fprintln(out, "")
 	var token string
 	for {
 		fmt.Fprint(out, "Enter your Bot User OAuth Token (xoxb-...): ")
-		token, _ = reader.ReadString('\n')
+		if term.IsTerminal(int(os.Stdin.Fd())) {
+			tokenBytes, err := term.ReadPassword(int(os.Stdin.Fd()))
+			fmt.Fprintln(out) // ReadPassword は改行を出力しないので補完
+			if err != nil {
+				return fmt.Errorf("failed to read token: %w", err)
+			}
+			token = string(tokenBytes)
+		} else {
+			// 非ターミナル（パイプ等）の場合は通常読み取り
+			token, _ = reader.ReadString('\n')
+		}
 		token = strings.TrimSpace(token)
 
 		if strings.HasPrefix(token, "xoxb-") {
@@ -68,6 +81,7 @@ func runSetup(cmd *cobra.Command, args []string) error {
 		}
 		fmt.Fprintln(out, "  ⚠️  Token must start with 'xoxb-'. Please try again.")
 	}
+	fmt.Fprintf(out, "  ✅ Token received: %s\n", apperr.MaskToken(token))
 
 	// Step 3: デフォルトチャンネル入力
 	fmt.Fprintln(out, "")
@@ -97,12 +111,13 @@ func runSetup(cmd *cobra.Command, args []string) error {
 	}
 	fmt.Fprintf(out, "✅ Created %s\n", configPath)
 
-	// Step 5: 環境変数の設定案内
+	// Step 5: 環境変数の設定案内（トークンはマスキングして表示）
 	fmt.Fprintln(out, "")
 	fmt.Fprintln(out, "📝 Set the SLACK_BOT_TOKEN environment variable:")
 	fmt.Fprintln(out, "")
-	fmt.Fprintf(out, "  export SLACK_BOT_TOKEN='%s'\n", token)
+	fmt.Fprintf(out, "  export SLACK_BOT_TOKEN='<your-token>'  # %s\n", apperr.MaskToken(token))
 	fmt.Fprintln(out, "")
+	fmt.Fprintln(out, "  Paste the token you entered above into the command.")
 	fmt.Fprintln(out, "  Add this to your shell profile (~/.zshrc, ~/.bashrc) for persistence.")
 
 	// Step 6: .gitignore 追記確認
