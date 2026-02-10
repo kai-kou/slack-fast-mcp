@@ -21,6 +21,7 @@ func TestLoad_ValidJSON(t *testing.T) {
 	dir := t.TempDir()
 	writeTestConfig(t, dir, LocalConfigFile, `{"token":"${SLACK_BOT_TOKEN}","default_channel":"general","log_level":"debug"}`)
 	t.Setenv(EnvSlackBotToken, "xoxb-test-token-value")
+	t.Setenv(EnvSlackDefaultChannel, "")
 
 	cfg, err := Load(dir)
 	if err != nil {
@@ -41,6 +42,8 @@ func TestLoad_ValidJSON(t *testing.T) {
 func TestLoad_EnvVarExpansion(t *testing.T) {
 	dir := t.TempDir()
 	writeTestConfig(t, dir, LocalConfigFile, `{"token":"${MY_CUSTOM_TOKEN}","default_channel":"${MY_CHANNEL}"}`)
+	t.Setenv(EnvSlackBotToken, "")
+	t.Setenv(EnvSlackDefaultChannel, "")
 	t.Setenv("MY_CUSTOM_TOKEN", "xoxb-expanded-token")
 	t.Setenv("MY_CHANNEL", "dev-channel")
 
@@ -60,6 +63,8 @@ func TestLoad_EnvVarExpansion(t *testing.T) {
 func TestLoad_EnvVarNotSet(t *testing.T) {
 	dir := t.TempDir()
 	writeTestConfig(t, dir, LocalConfigFile, `{"token":"${NONEXISTENT_VAR}"}`)
+	t.Setenv(EnvSlackBotToken, "")
+	t.Setenv(EnvSlackDefaultChannel, "")
 	// NONEXISTENT_VAR は設定しない
 
 	cfg, err := Load(dir)
@@ -147,6 +152,8 @@ func TestLoad_EnvOverridesLocal(t *testing.T) {
 // --- C08: トークン直書き検出（警告出力） ---
 func TestLoad_HardcodedTokenWarning(t *testing.T) {
 	dir := t.TempDir()
+	t.Setenv(EnvSlackBotToken, "")
+	t.Setenv(EnvSlackDefaultChannel, "")
 	// 直書きトークン
 	writeTestConfig(t, dir, LocalConfigFile, `{"token":"xoxb-1234567890-abcdef"}`)
 
@@ -178,6 +185,8 @@ func TestLoad_HardcodedTokenWarning(t *testing.T) {
 // --- C09: 空の設定ファイル ---
 func TestLoad_EmptyConfigFile(t *testing.T) {
 	dir := t.TempDir()
+	t.Setenv(EnvSlackBotToken, "")
+	t.Setenv(EnvSlackDefaultChannel, "")
 	writeTestConfig(t, dir, LocalConfigFile, `{}`)
 
 	cfg, err := Load(dir)
@@ -197,6 +206,7 @@ func TestLoad_NoDefaultChannel(t *testing.T) {
 	dir := t.TempDir()
 	writeTestConfig(t, dir, LocalConfigFile, `{"token":"${SLACK_BOT_TOKEN}"}`)
 	t.Setenv(EnvSlackBotToken, "xoxb-test")
+	t.Setenv(EnvSlackDefaultChannel, "")
 
 	cfg, err := Load(dir)
 	if err != nil {
@@ -286,6 +296,7 @@ func TestLoadFromPath(t *testing.T) {
 	dir := t.TempDir()
 	path := writeTestConfig(t, dir, "custom.json", `{"token":"${SLACK_BOT_TOKEN}","default_channel":"custom-ch"}`)
 	t.Setenv(EnvSlackBotToken, "xoxb-custom-path")
+	t.Setenv(EnvSlackDefaultChannel, "")
 
 	cfg, err := LoadFromPath(path)
 	if err != nil {

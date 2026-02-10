@@ -103,10 +103,80 @@ slack-fast-mcp で投稿・閲覧するチャンネルに Bot を招待する必
 
 ### 5.1 方法A: 環境変数で設定（推奨）
 
+環境変数にトークンを設定します。**シェルプロファイルに記述することで、全プロジェクト・全ターミナルセッションで共通利用できます。**
+
+#### ステップ 1: 使用中のシェルを確認
+
 ```bash
-export SLACK_BOT_TOKEN="<ここに §3.2 で取得した Bot User OAuth Token を設定>"
-export SLACK_DEFAULT_CHANNEL="general"
+echo $SHELL
 ```
+
+| 出力 | シェル | 次のステップで編集するファイル |
+|---|---|---|
+| `/bin/zsh` | zsh（macOS デフォルト） | `~/.zprofile` |
+| `/bin/bash` | bash（Linux デフォルト） | `~/.bash_profile` |
+
+> **`~/.zprofile` vs `~/.zshrc` の違い:** `~/.zprofile` はログインシェル起動時に一度だけ読み込まれるファイルで、環境変数の設定に適しています。`~/.zshrc` はインタラクティブシェル起動時に毎回読み込まれます。どちらに書いても動作しますが、環境変数は `~/.zprofile`（bash の場合は `~/.bash_profile`）に書くのが一般的です。
+
+#### ステップ 2: シェルプロファイルに追記
+
+**macOS (zsh) の場合:**
+
+```bash
+# ~/.zprofile を開いて末尾に追記
+# （エディタで直接編集しても、以下のコマンドで追記しても OK）
+
+# slack-fast-mcp
+export SLACK_BOT_TOKEN='xoxb-your-token-here'
+export SLACK_DEFAULT_CHANNEL='general'
+```
+
+<details>
+<summary>Linux (bash) の場合</summary>
+
+```bash
+# ~/.bash_profile を開いて末尾に追記
+
+# slack-fast-mcp
+export SLACK_BOT_TOKEN='xoxb-your-token-here'
+export SLACK_DEFAULT_CHANNEL='general'
+```
+
+</details>
+
+<details>
+<summary>Windows の場合</summary>
+
+PowerShell でシステム環境変数を設定:
+
+```powershell
+# ユーザー環境変数として設定（再起動後も有効）
+[Environment]::SetEnvironmentVariable("SLACK_BOT_TOKEN", "xoxb-your-token-here", "User")
+[Environment]::SetEnvironmentVariable("SLACK_DEFAULT_CHANNEL", "general", "User")
+```
+
+設定後、PowerShell を再起動してください。
+
+</details>
+
+#### ステップ 3: 設定を反映
+
+```bash
+# ターミナルを再起動するか、以下を実行:
+source ~/.zprofile    # macOS (zsh) の場合
+source ~/.bash_profile  # Linux (bash) の場合
+```
+
+#### ステップ 4: 設定を確認
+
+```bash
+echo $SLACK_BOT_TOKEN    # → xoxb-... と表示されれば OK
+echo $SLACK_DEFAULT_CHANNEL  # → general と表示されれば OK
+```
+
+> **AI エディタ（Cursor / Windsurf）での利用:** Cursor の MCP 設定（`.cursor/mcp.json`）で `"${SLACK_BOT_TOKEN}"` と記述すると、ここで設定した環境変数が自動的に参照されます。Cursor は起動時にシェルの環境変数を読み込むため、プロファイル変更後は**ターミナルを新しく開いてから Cursor を再起動**してください。詳しくは [§6](#6-cursor-mcp-設定) を参照してください。
+
+> **セキュリティ上の注意:** 共有サーバーなどマルチユーザー環境では、シェルプロファイルのパーミッションを確認してください（`chmod 600 ~/.zprofile`）。また、dotfiles を GitHub 等の公開リポジトリで管理している場合は、トークンが含まれるファイルを除外するよう注意してください。
 
 ### 5.2 方法B: プロジェクトローカル設定ファイル
 
@@ -119,7 +189,7 @@ export SLACK_DEFAULT_CHANNEL="general"
 }
 ```
 
-> **注意**: `token` フィールドには `${SLACK_BOT_TOKEN}` のように環境変数参照を使うことを強く推奨します。トークンを直書きしないでください。
+> **注意**: `token` フィールドには `${SLACK_BOT_TOKEN}` のように環境変数参照を使うことを強く推奨します。トークンを直書きしないでください。環境変数の設定方法は [§5.1](#51-方法a-環境変数で設定推奨) を参照してください。
 
 `.gitignore` に追加：
 
@@ -142,7 +212,7 @@ mkdir -p ~/.config/slack-fast-mcp
 }
 ```
 
-> **注意**: グローバル設定ファイルでも `${SLACK_BOT_TOKEN}` 形式での環境変数参照を推奨します。環境変数 `SLACK_BOT_TOKEN` にトークンを設定してください。
+> **注意**: グローバル設定ファイルでも `${SLACK_BOT_TOKEN}` 形式での環境変数参照を推奨します。環境変数の設定方法は [§5.1](#51-方法a-環境変数で設定推奨) を参照してください。
 
 ---
 

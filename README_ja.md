@@ -134,7 +134,22 @@ export SLACK_BOT_TOKEN='xoxb-your-token-here'
 echo '{"token":"${SLACK_BOT_TOKEN}","default_channel":"general"}' > .slack-mcp.json
 ```
 
-> **注意:** `export` は現在のターミナルセッションのみ有効です。永続化するにはシェルプロファイル（`~/.zshrc`、`~/.bashrc` 等）に追記し、ターミナルを再起動してください。
+> **重要:** 上記の `export` コマンドは現在のターミナルセッションのみ有効です。セッション終了後も維持し、Cursor などの AI エディタから参照できるようにするには、**シェルプロファイルに追記**してください:
+>
+> | シェル | 編集するファイル | 確認方法 |
+> |---|---|---|
+> | **zsh**（macOS デフォルト） | `~/.zprofile` または `~/.zshrc` | `echo $SHELL` が `/bin/zsh` |
+> | **bash** | `~/.bash_profile` または `~/.bashrc` | `echo $SHELL` が `/bin/bash` |
+>
+> ```bash
+> # 例: ~/.zprofile に追記（macOS + zsh の場合）
+> echo "export SLACK_BOT_TOKEN='xoxb-your-token-here'" >> ~/.zprofile
+> echo "export SLACK_DEFAULT_CHANNEL='general'" >> ~/.zprofile
+> ```
+>
+> 編集後、**ターミナルを再起動**（または `source ~/.zprofile` を実行）すると反映されます。
+>
+> OS ごとの詳しい設定手順は [Slack App セットアップガイド §5.1](./docs/slack-app-setup.md#51-方法a-環境変数で設定推奨) を参照してください。
 
 ### 4. AI エディタで使用
 
@@ -286,6 +301,8 @@ slack-fast-mcp setup
 | `SLACK_BOT_TOKEN` | Slack Bot User OAuth Token |
 | `SLACK_DEFAULT_CHANNEL` | デフォルトチャンネル |
 | `SLACK_FAST_MCP_LOG_LEVEL` | ログレベル（debug/info/warn/error） |
+
+> これらの環境変数をターミナル再起動後も維持するには、シェルプロファイル（zsh: `~/.zprofile`、bash: `~/.bash_profile`）に `export` 行を追記してください。詳しくは[クイックスタート §3](#3-設定) を参照。
 
 </details>
 

@@ -134,7 +134,22 @@ export SLACK_BOT_TOKEN='xoxb-your-token-here'
 echo '{"token":"${SLACK_BOT_TOKEN}","default_channel":"general"}' > .slack-mcp.json
 ```
 
-> **Note:** `export` sets the variable for the current terminal session only. To persist it, add the line to your shell profile (`~/.zshrc`, `~/.bashrc`, etc.) and restart your terminal.
+> **Important:** The `export` command above only sets the variable for the current terminal session. To persist it across sessions (and for AI editors like Cursor to pick it up), **add the export lines to your shell profile**:
+>
+> | Shell | File to edit | How to check |
+> |---|---|---|
+> | **zsh** (macOS default) | `~/.zprofile` or `~/.zshrc` | `echo $SHELL` shows `/bin/zsh` |
+> | **bash** | `~/.bash_profile` or `~/.bashrc` | `echo $SHELL` shows `/bin/bash` |
+>
+> ```bash
+> # Example: Add to ~/.zprofile (macOS with zsh)
+> echo "export SLACK_BOT_TOKEN='xoxb-your-token-here'" >> ~/.zprofile
+> echo "export SLACK_DEFAULT_CHANNEL='general'" >> ~/.zprofile
+> ```
+>
+> After editing, **restart your terminal** (or run `source ~/.zprofile`) to apply the changes.
+>
+> For detailed setup instructions for each OS, see the [Slack App Setup Guide §5.1](./docs/slack-app-setup.md#51-方法a-環境変数で設定推奨).
 
 ### 4. Use with AI Editors
 
@@ -286,6 +301,8 @@ slack-fast-mcp setup
 | `SLACK_BOT_TOKEN` | Slack Bot User OAuth Token |
 | `SLACK_DEFAULT_CHANNEL` | Default channel |
 | `SLACK_FAST_MCP_LOG_LEVEL` | Log level (debug/info/warn/error) |
+
+> To persist these across terminal sessions, add `export` lines to your shell profile (`~/.zprofile` for zsh, `~/.bash_profile` for bash). See [Quick Start §3](#3-configure) for details.
 
 </details>
 
