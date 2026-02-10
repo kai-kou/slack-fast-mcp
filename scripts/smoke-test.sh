@@ -64,7 +64,23 @@ else
     fail "Binary size is unexpected (${SIZE_MB}MB, expected 5-50MB)"
 fi
 
-# 5. MCP プロトコルの初期化リクエストに応答するか
+# 5. version サブコマンドが動作するか
+VERSION_OUTPUT=$("${BINARY}" version 2>&1 || true)
+if echo "${VERSION_OUTPUT}" | grep -q "slack-fast-mcp"; then
+    pass "Version subcommand works"
+else
+    fail "Version subcommand failed (got: ${VERSION_OUTPUT})"
+fi
+
+# 6. help が正しいサブコマンド一覧を表示するか
+HELP_OUTPUT=$("${BINARY}" --help 2>&1 || true)
+if echo "${HELP_OUTPUT}" | grep -q "post" && echo "${HELP_OUTPUT}" | grep -q "history" && echo "${HELP_OUTPUT}" | grep -q "reply" && echo "${HELP_OUTPUT}" | grep -q "setup"; then
+    pass "Help shows all subcommands"
+else
+    fail "Help missing subcommands (got: ${HELP_OUTPUT})"
+fi
+
+# 7. MCP プロトコルの初期化リクエストに応答するか
 # JSON-RPC initialize リクエストを送信して応答を確認
 # Note: stdio通信のため、パイプ環境では安定しない場合がある。
 #       MCPプロトコルレベルの検証は Go の smoke_test.go で実施。

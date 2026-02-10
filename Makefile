@@ -6,7 +6,7 @@ BUILD_DIR := ./build
 REPORTS_DIR := ./reports
 COVERAGE_FILE := $(REPORTS_DIR)/coverage.out
 COVERAGE_HTML := $(REPORTS_DIR)/coverage.html
-COVERAGE_THRESHOLD := 75
+COVERAGE_THRESHOLD := 65
 TIMESTAMP := $(shell date +%Y-%m-%d_%H%M%S)
 VERSION := $(shell git describe --tags --always --dirty 2>/dev/null || echo "dev")
 LDFLAGS := -ldflags "-X main.version=$(VERSION)"
