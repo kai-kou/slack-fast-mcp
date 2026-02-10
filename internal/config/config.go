@@ -16,6 +16,7 @@ import (
 type Config struct {
 	Token          string `json:"token"`
 	DefaultChannel string `json:"default_channel"`
+	DisplayName    string `json:"display_name"`
 	LogLevel       string `json:"log_level"`
 }
 
@@ -32,8 +33,9 @@ const (
 
 // 環境変数名
 const (
-	EnvSlackBotToken      = "SLACK_BOT_TOKEN"
-	EnvSlackDefaultChannel = "SLACK_DEFAULT_CHANNEL"
+	EnvSlackBotToken        = "SLACK_BOT_TOKEN"
+	EnvSlackDefaultChannel  = "SLACK_DEFAULT_CHANNEL"
+	EnvSlackDisplayName     = "SLACK_DISPLAY_NAME"
 	EnvSlackFastMCPLogLevel = "SLACK_FAST_MCP_LOG_LEVEL"
 )
 
@@ -72,6 +74,7 @@ func Load(projectDir string) (*Config, error) {
 	// 3. トークンの環境変数展開（${VAR} 形式）
 	cfg.Token = expandEnvVars(cfg.Token)
 	cfg.DefaultChannel = expandEnvVars(cfg.DefaultChannel)
+	cfg.DisplayName = expandEnvVars(cfg.DisplayName)
 
 	// 4. 環境変数で上書き
 	if v := os.Getenv(EnvSlackBotToken); v != "" {
@@ -79,6 +82,9 @@ func Load(projectDir string) (*Config, error) {
 	}
 	if v := os.Getenv(EnvSlackDefaultChannel); v != "" {
 		cfg.DefaultChannel = v
+	}
+	if v := os.Getenv(EnvSlackDisplayName); v != "" {
+		cfg.DisplayName = v
 	}
 	if v := os.Getenv(EnvSlackFastMCPLogLevel); v != "" {
 		cfg.LogLevel = v
@@ -109,6 +115,7 @@ func LoadFromPath(path string) (*Config, error) {
 	// 環境変数展開
 	cfg.Token = expandEnvVars(cfg.Token)
 	cfg.DefaultChannel = expandEnvVars(cfg.DefaultChannel)
+	cfg.DisplayName = expandEnvVars(cfg.DisplayName)
 
 	// 環境変数で上書き
 	if v := os.Getenv(EnvSlackBotToken); v != "" {
@@ -116,6 +123,9 @@ func LoadFromPath(path string) (*Config, error) {
 	}
 	if v := os.Getenv(EnvSlackDefaultChannel); v != "" {
 		cfg.DefaultChannel = v
+	}
+	if v := os.Getenv(EnvSlackDisplayName); v != "" {
+		cfg.DisplayName = v
 	}
 	if v := os.Getenv(EnvSlackFastMCPLogLevel); v != "" {
 		cfg.LogLevel = v
@@ -146,6 +156,15 @@ func (c *Config) ResolveChannel(channel string) (string, error) {
 		"チャンネル未指定かつデフォルト未設定", nil)
 }
 
+// ResolveDisplayName は表示名を解決する。
+// パラメータ指定 > デフォルト表示名 の優先順位。空の場合は空文字を返す（エラーにしない）。
+func (c *Config) ResolveDisplayName(displayName string) string {
+	if displayName != "" {
+		return displayName
+	}
+	return c.DisplayName
+}
+
 // loadFromFile はJSONファイルからConfigを読み込む。
 func loadFromFile(path string) (*Config, error) {
 	data, err := os.ReadFile(path)
@@ -168,6 +187,9 @@ func mergeConfig(dst, src *Config) {
 	}
 	if src.DefaultChannel != "" {
 		dst.DefaultChannel = src.DefaultChannel
+	}
+	if src.DisplayName != "" {
+		dst.DisplayName = src.DisplayName
 	}
 	if src.LogLevel != "" {
 		dst.LogLevel = src.LogLevel

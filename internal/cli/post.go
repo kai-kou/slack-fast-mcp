@@ -49,7 +49,8 @@ func runPost(cmd *cobra.Command, args []string) error {
 	ctx, cancel := context.WithTimeout(cmd.Context(), 10*time.Second)
 	defer cancel()
 
-	result, err := client.PostMessage(ctx, channel, flagMessage)
+	message := resolveAndTagMessage(cfg, flagMessage)
+	result, err := client.PostMessage(ctx, channel, message)
 	if err != nil {
 		return err
 	}

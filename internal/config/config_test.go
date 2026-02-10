@@ -265,6 +265,65 @@ func TestConfig_ResolveChannel(t *testing.T) {
 	}
 }
 
+// --- ResolveDisplayName テスト ---
+func TestConfig_ResolveDisplayName(t *testing.T) {
+	tests := []struct {
+		name        string
+		cfg         *Config
+		displayName string
+		want        string
+	}{
+		{"explicit name", &Config{DisplayName: "default-name"}, "explicit-name", "explicit-name"},
+		{"config default", &Config{DisplayName: "default-name"}, "", "default-name"},
+		{"no name", &Config{DisplayName: ""}, "", ""},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := tt.cfg.ResolveDisplayName(tt.displayName)
+			if got != tt.want {
+				t.Errorf("ResolveDisplayName() = %q, want %q", got, tt.want)
+			}
+		})
+	}
+}
+
+// --- DisplayName 環境変数テスト ---
+func TestLoad_DisplayNameEnvVar(t *testing.T) {
+	dir := t.TempDir()
+	writeTestConfig(t, dir, LocalConfigFile, `{"token":"${SLACK_BOT_TOKEN}"}`)
+
+	t.Setenv(EnvSlackBotToken, "xoxb-test")
+	t.Setenv(EnvSlackDefaultChannel, "")
+	t.Setenv(EnvSlackDisplayName, "くろ")
+
+	cfg, err := Load(dir)
+	if err != nil {
+		t.Fatalf("Load() error: %v", err)
+	}
+	if cfg.DisplayName != "くろ" {
+		t.Errorf("DisplayName = %q, want %q", cfg.DisplayName, "くろ")
+	}
+}
+
+// --- DisplayName JSON設定テスト ---
+func TestLoad_DisplayNameFromJSON(t *testing.T) {
+	dir := t.TempDir()
+	writeTestConfig(t, dir, LocalConfigFile, `{"token":"${SLACK_BOT_TOKEN}","display_name":"しろ"}`)
+
+	t.Setenv(EnvSlackBotToken, "xoxb-test")
+	t.Setenv(EnvSlackDefaultChannel, "")
+	t.Setenv(EnvSlackDisplayName, "")
+
+	cfg, err := Load(dir)
+	if err != nil {
+		t.Fatalf("Load() error: %v", err)
+	}
+	if cfg.DisplayName != "しろ" {
+		t.Errorf("DisplayName = %q, want %q", cfg.DisplayName, "しろ")
+	}
+}
+
 // --- expandEnvVars テスト ---
 func TestExpandEnvVars(t *testing.T) {
 	t.Setenv("TEST_VAR", "expanded_value")

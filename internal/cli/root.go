@@ -5,6 +5,7 @@ package cli
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/kai-kou/slack-fast-mcp/internal/config"
 	slackclient "github.com/kai-kou/slack-fast-mcp/internal/slack"
@@ -16,11 +17,12 @@ var Version = "dev"
 
 // グローバルフラグ
 var (
-	flagConfig  string
-	flagToken   string
-	flagChannel string
-	flagVerbose bool
-	flagJSON    bool
+	flagConfig      string
+	flagToken       string
+	flagChannel     string
+	flagDisplayName string
+	flagVerbose     bool
+	flagJSON        bool
 )
 
 // NewRootCmd はルートコマンドを作成する。
@@ -46,6 +48,7 @@ Without any subcommand, starts the MCP Server in stdio mode.`,
 	rootCmd.PersistentFlags().StringVar(&flagConfig, "config", "", "config file path (default: .slack-mcp.json)")
 	rootCmd.PersistentFlags().StringVar(&flagToken, "token", "", "Slack Bot Token (overrides config/env)")
 	rootCmd.PersistentFlags().StringVar(&flagChannel, "channel", "", "channel name or ID")
+	rootCmd.PersistentFlags().StringVar(&flagDisplayName, "display-name", "", "sender display name (appends #name hashtag)")
 	rootCmd.PersistentFlags().BoolVar(&flagVerbose, "verbose", false, "enable verbose output")
 	rootCmd.PersistentFlags().BoolVar(&flagJSON, "json", false, "output in JSON format")
 
@@ -121,4 +124,21 @@ func loadConfigAndClient() (*config.Config, slackclient.SlackClient, error) {
 // resolveChannel はフラグ → 設定ファイルの優先度でチャンネルを解決する。
 func resolveChannel(cfg *config.Config) (string, error) {
 	return cfg.ResolveChannel(flagChannel)
+}
+
+// resolveAndTagMessage は display_name を解決し、メッセージにハッシュタグを付与する。
+func resolveAndTagMessage(cfg *config.Config, message string) string {
+	displayName := cfg.ResolveDisplayName(flagDisplayName)
+	if displayName == "" {
+		return message
+	}
+
+	tag := "#" + displayName
+	lines := strings.Split(message, "\n")
+	lastLine := strings.TrimSpace(lines[len(lines)-1])
+	if strings.HasPrefix(lastLine, "#") {
+		lines[len(lines)-1] = strings.TrimRight(lines[len(lines)-1], " ") + " " + tag
+		return strings.Join(lines, "\n")
+	}
+	return message + "\n" + tag
 }

@@ -51,7 +51,8 @@ func runReply(cmd *cobra.Command, args []string) error {
 	ctx, cancel := context.WithTimeout(cmd.Context(), 10*time.Second)
 	defer cancel()
 
-	result, err := client.PostThread(ctx, channel, flagThreadTS, flagMessage)
+	message := resolveAndTagMessage(cfg, flagMessage)
+	result, err := client.PostThread(ctx, channel, flagThreadTS, message)
 	if err != nil {
 		return err
 	}

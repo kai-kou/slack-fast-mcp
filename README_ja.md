@@ -217,6 +217,7 @@ slack_post_message(channel: "general", message: "Hello World!")
 |---|---|---|---|
 | `channel` | string | No | チャンネル名 or ID（設定ファイルのデフォルト値を使用） |
 | `message` | string | Yes | メッセージ本文（Slack mrkdwn 対応） |
+| `display_name` | string | No | 送信者名（メッセージ末尾に `#名前` ハッシュタグを付与） |
 
 ### `slack_get_history`
 
@@ -246,6 +247,7 @@ slack_post_thread(channel: "general", thread_ts: "1234567890.123456", message: "
 | `channel` | string | No | チャンネル名 or ID |
 | `thread_ts` | string | Yes | 返信先メッセージのタイムスタンプ |
 | `message` | string | Yes | 返信メッセージ本文（Slack mrkdwn 対応） |
+| `display_name` | string | No | 送信者名（メッセージ末尾に `#名前` ハッシュタグを付与） |
 
 ## CLI の使い方
 
@@ -289,7 +291,8 @@ slack-fast-mcp setup
 ```json
 {
   "token": "${SLACK_BOT_TOKEN}",
-  "default_channel": "general"
+  "default_channel": "general",
+  "display_name": "くろ"
 }
 ```
 
@@ -297,6 +300,7 @@ slack-fast-mcp setup
 |---|---|---|---|
 | `token` | string | Yes | Bot トークン。`${ENV_VAR}` で環境変数を参照可能 |
 | `default_channel` | string | No | デフォルトチャンネル名 or ID |
+| `display_name` | string | No | デフォルトの送信者名（メッセージ末尾に `#名前` ハッシュタグを付与） |
 
 ### 環境変数
 
@@ -304,6 +308,7 @@ slack-fast-mcp setup
 |---|---|
 | `SLACK_BOT_TOKEN` | Slack Bot User OAuth Token |
 | `SLACK_DEFAULT_CHANNEL` | デフォルトチャンネル |
+| `SLACK_DISPLAY_NAME` | デフォルトの送信者表示名 |
 | `SLACK_FAST_MCP_LOG_LEVEL` | ログレベル（debug/info/warn/error） |
 
 > これらの環境変数をターミナル再起動後も維持するには、シェルプロファイル（zsh: `~/.zprofile`、bash: `~/.bash_profile`）に `export` 行を追記してください。詳しくは[クイックスタート §3](#3-設定) を参照。

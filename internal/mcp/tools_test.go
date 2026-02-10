@@ -318,6 +318,163 @@ func TestServer_ToolsRegistered(t *testing.T) {
 	}
 }
 
+// --- M13: appendDisplayNameTag テスト ---
+func TestAppendDisplayNameTag(t *testing.T) {
+	tests := []struct {
+		name        string
+		message     string
+		displayName string
+		want        string
+	}{
+		{
+			name:        "empty display_name → no change",
+			message:     "Hello World",
+			displayName: "",
+			want:        "Hello World",
+		},
+		{
+			name:        "basic tag append",
+			message:     "Hello World",
+			displayName: "くろ",
+			want:        "Hello World\n#くろ",
+		},
+		{
+			name:        "message already has hashtag line → same line",
+			message:     "Hello World\n#cursor #slack-fast-mcp",
+			displayName: "くろ",
+			want:        "Hello World\n#cursor #slack-fast-mcp #くろ",
+		},
+		{
+			name:        "message has hashtag line with trailing space",
+			message:     "Hello World\n#cursor #dev ",
+			displayName: "しろ",
+			want:        "Hello World\n#cursor #dev #しろ",
+		},
+		{
+			name:        "multiline message without hashtag",
+			message:     "Line 1\nLine 2\nLine 3",
+			displayName: "くろ",
+			want:        "Line 1\nLine 2\nLine 3\n#くろ",
+		},
+		{
+			name:        "single line with hashtag prefix",
+			message:     "#already-tagged",
+			displayName: "くろ",
+			want:        "#already-tagged #くろ",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := appendDisplayNameTag(tt.message, tt.displayName)
+			if got != tt.want {
+				t.Errorf("appendDisplayNameTag(%q, %q) = %q, want %q", tt.message, tt.displayName, got, tt.want)
+			}
+		})
+	}
+}
+
+// --- M14: slack_post_message with display_name ---
+func TestPostMessageHandler_WithDisplayName(t *testing.T) {
+	var capturedMessage string
+	mock := &slackclient.MockClient{
+		PostMessageFunc: func(ctx context.Context, channel, message string) (*slackclient.PostResult, error) {
+			capturedMessage = message
+			return &slackclient.PostResult{
+				Channel: "C01234ABCDE",
+				TS:      "1234567890.123456",
+				Message: message,
+			}, nil
+		},
+	}
+
+	cfg := &config.Config{DefaultChannel: "general"}
+	handler := postMessageHandler(mock, cfg)
+
+	req := newTestCallToolRequest("slack_post_message", map[string]any{
+		"message":      "Hello from test\n#cursor #project",
+		"display_name": "くろ",
+	})
+
+	_, err := handler(context.Background(), req)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if !strings.Contains(capturedMessage, "#くろ") {
+		t.Errorf("capturedMessage = %q, want to contain #くろ", capturedMessage)
+	}
+	// ハッシュタグ行に追記されるはず
+	if !strings.Contains(capturedMessage, "#cursor #project #くろ") {
+		t.Errorf("capturedMessage = %q, want hashtag appended to existing line", capturedMessage)
+	}
+}
+
+// --- M15: slack_post_message with display_name from config ---
+func TestPostMessageHandler_DisplayNameFromConfig(t *testing.T) {
+	var capturedMessage string
+	mock := &slackclient.MockClient{
+		PostMessageFunc: func(ctx context.Context, channel, message string) (*slackclient.PostResult, error) {
+			capturedMessage = message
+			return &slackclient.PostResult{
+				Channel: "C01234ABCDE",
+				TS:      "1234567890.123456",
+				Message: message,
+			}, nil
+		},
+	}
+
+	cfg := &config.Config{DefaultChannel: "general", DisplayName: "しろ"}
+	handler := postMessageHandler(mock, cfg)
+
+	// display_name パラメータ未指定 → Config のデフォルトが使われる
+	req := newTestCallToolRequest("slack_post_message", map[string]any{
+		"message": "Hello from config",
+	})
+
+	_, err := handler(context.Background(), req)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if !strings.Contains(capturedMessage, "#しろ") {
+		t.Errorf("capturedMessage = %q, want to contain #しろ from config", capturedMessage)
+	}
+}
+
+// --- M16: display_name パラメータが Config を上書き ---
+func TestPostMessageHandler_DisplayNameParamOverridesConfig(t *testing.T) {
+	var capturedMessage string
+	mock := &slackclient.MockClient{
+		PostMessageFunc: func(ctx context.Context, channel, message string) (*slackclient.PostResult, error) {
+			capturedMessage = message
+			return &slackclient.PostResult{
+				Channel: "C01234ABCDE",
+				TS:      "1234567890.123456",
+				Message: message,
+			}, nil
+		},
+	}
+
+	cfg := &config.Config{DefaultChannel: "general", DisplayName: "しろ"}
+	handler := postMessageHandler(mock, cfg)
+
+	// display_name パラメータ指定 → Config よりパラメータ優先
+	req := newTestCallToolRequest("slack_post_message", map[string]any{
+		"message":      "Hello with override",
+		"display_name": "くろ",
+	})
+
+	_, err := handler(context.Background(), req)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if !strings.Contains(capturedMessage, "#くろ") {
+		t.Errorf("capturedMessage = %q, want to contain #くろ (param override)", capturedMessage)
+	}
+	if strings.Contains(capturedMessage, "#しろ") {
+		t.Errorf("capturedMessage = %q, should NOT contain #しろ (config default overridden)", capturedMessage)
+	}
+}
+
 // --- ヘルパー ---
 
 func extractText(t *testing.T, result *mcp.CallToolResult) string {

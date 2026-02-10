@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	"github.com/kai-kou/slack-fast-mcp/internal/config"
 	apperr "github.com/kai-kou/slack-fast-mcp/internal/errors"
@@ -29,6 +30,11 @@ func postMessageTool() mcp.Tool {
 			mcp.Description("Message text to post. Supports Slack mrkdwn: "+
 				"*bold*, _italic_, `code`, ```code block```, <url|text>."),
 		),
+		mcp.WithString("display_name",
+			mcp.Description("Display name of the sender (e.g. AI agent persona name). "+
+				"If provided, appends #display_name hashtag to the message. "+
+				"Useful for identifying which AI persona posted the message."),
+		),
 	)
 }
 
@@ -36,6 +42,7 @@ func postMessageHandler(client slackclient.SlackClient, cfg *config.Config) serv
 	return func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		channelParam := request.GetString("channel", "")
 		message := request.GetString("message", "")
+		displayNameParam := request.GetString("display_name", "")
 
 		if message == "" {
 			appErr := apperr.New(apperr.CodeNoText, "メッセージが空です", nil)
@@ -46,6 +53,10 @@ func postMessageHandler(client slackclient.SlackClient, cfg *config.Config) serv
 		if err != nil {
 			return handleAppError(err)
 		}
+
+		// display_name の解決（パラメータ > Config デフォルト）
+		displayName := cfg.ResolveDisplayName(displayNameParam)
+		message = appendDisplayNameTag(message, displayName)
 
 		result, err := client.PostMessage(ctx, channel, message)
 		if err != nil {
@@ -144,6 +155,11 @@ func postThreadTool() mcp.Tool {
 			mcp.Description("Reply message text to post. Supports Slack mrkdwn: "+
 				"*bold*, _italic_, `code`, ```code block```, <url|text>."),
 		),
+		mcp.WithString("display_name",
+			mcp.Description("Display name of the sender (e.g. AI agent persona name). "+
+				"If provided, appends #display_name hashtag to the message. "+
+				"Useful for identifying which AI persona posted the message."),
+		),
 	)
 }
 
@@ -152,6 +168,7 @@ func postThreadHandler(client slackclient.SlackClient, cfg *config.Config) serve
 		channelParam := request.GetString("channel", "")
 		threadTS := request.GetString("thread_ts", "")
 		message := request.GetString("message", "")
+		displayNameParam := request.GetString("display_name", "")
 
 		if message == "" {
 			appErr := apperr.New(apperr.CodeNoText, "メッセージが空です", nil)
@@ -167,6 +184,10 @@ func postThreadHandler(client slackclient.SlackClient, cfg *config.Config) serve
 		if err != nil {
 			return handleAppError(err)
 		}
+
+		// display_name の解決（パラメータ > Config デフォルト）
+		displayName := cfg.ResolveDisplayName(displayNameParam)
+		message = appendDisplayNameTag(message, displayName)
 
 		result, err := client.PostThread(ctx, channel, threadTS, message)
 		if err != nil {
@@ -186,6 +207,25 @@ func postThreadHandler(client slackclient.SlackClient, cfg *config.Config) serve
 }
 
 // --- ヘルパー ---
+
+// appendDisplayNameTag は display_name が指定されている場合、メッセージ末尾にハッシュタグを追加する。
+// 既にメッセージ末尾にハッシュタグ行がある場合は同じ行に追加し、ない場合は改行して追加する。
+func appendDisplayNameTag(message, displayName string) string {
+	if displayName == "" {
+		return message
+	}
+
+	tag := "#" + displayName
+	// メッセージ末尾がハッシュタグ行で終わっている場合は同じ行に追加
+	lines := strings.Split(message, "\n")
+	lastLine := strings.TrimSpace(lines[len(lines)-1])
+	if strings.HasPrefix(lastLine, "#") {
+		lines[len(lines)-1] = strings.TrimRight(lines[len(lines)-1], " ") + " " + tag
+		return strings.Join(lines, "\n")
+	}
+
+	return message + "\n" + tag
+}
 
 // handleAppError はエラーをMCPツールエラーに変換する。
 func handleAppError(err error) (*mcp.CallToolResult, error) {

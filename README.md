@@ -217,6 +217,7 @@ slack_post_message(channel: "general", message: "Hello World!")
 |---|---|---|---|
 | `channel` | string | No | Channel name or ID (defaults to config) |
 | `message` | string | Yes | Message text (Slack mrkdwn supported) |
+| `display_name` | string | No | Sender name (appends `#name` hashtag to message) |
 
 ### `slack_get_history`
 
@@ -246,6 +247,7 @@ slack_post_thread(channel: "general", thread_ts: "1234567890.123456", message: "
 | `channel` | string | No | Channel name or ID (defaults to config) |
 | `thread_ts` | string | Yes | Thread timestamp to reply to |
 | `message` | string | Yes | Reply text (Slack mrkdwn supported) |
+| `display_name` | string | No | Sender name (appends `#name` hashtag to message) |
 
 ## CLI Usage
 
@@ -289,7 +291,8 @@ slack-fast-mcp setup
 ```json
 {
   "token": "${SLACK_BOT_TOKEN}",
-  "default_channel": "general"
+  "default_channel": "general",
+  "display_name": "くろ"
 }
 ```
 
@@ -297,6 +300,7 @@ slack-fast-mcp setup
 |---|---|---|---|
 | `token` | string | Yes | Bot token. Use `${ENV_VAR}` to reference env vars |
 | `default_channel` | string | No | Default channel name or ID |
+| `display_name` | string | No | Default sender name (appends `#name` hashtag to messages) |
 
 ### Environment Variables
 
@@ -304,6 +308,7 @@ slack-fast-mcp setup
 |---|---|
 | `SLACK_BOT_TOKEN` | Slack Bot User OAuth Token |
 | `SLACK_DEFAULT_CHANNEL` | Default channel |
+| `SLACK_DISPLAY_NAME` | Default sender display name |
 | `SLACK_FAST_MCP_LOG_LEVEL` | Log level (debug/info/warn/error) |
 
 > To persist these across terminal sessions, add `export` lines to your shell profile (`~/.zprofile` for zsh, `~/.bash_profile` for bash). See [Quick Start §3](#3-configure) for details.
