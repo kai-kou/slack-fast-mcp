@@ -1,0 +1,24 @@
+# .testcoverage.yml - テストカバレッジ閾値設定
+# go-test-coverage ツール用（ローカル・CI 両方で使用可能）
+#
+# インストール: go install github.com/vladopajic/go-test-coverage/v2@latest
+# 実行: go-test-coverage --config .testcoverage.yml --profile reports/coverage.out
+
+# 全体のカバレッジ閾値
+threshold:
+  # 全パッケージ合計のカバレッジ閾値（%）
+  total: 75
+
+  # パッケージごとのカバレッジ閾値（%）
+  per-package: 60
+
+  # ファイルごとのカバレッジ閾値（%）
+  per-file: 0
+
+# カバレッジ計算から除外するパッケージ
+exclude:
+  paths:
+    # テスト用モッククライアント
+    - internal/slack/mock_client.go
+    # main.go（統合テストでカバー）
+    - cmd/slack-fast-mcp/main.go

@@ -1,9 +1,9 @@
 ---
 milestones:
   total: 4
-  completed: 0
+  completed: 1
   in_progress: 1
-  overall_progress: 21
+  overall_progress: 48
 ---
 
 # マイルストーン管理
@@ -16,8 +16,8 @@ milestones:
 ## 全体スケジュール
 
 ```
-【Phase 1: 要件定義・技術設計】2026-02-10 〜 2026-02-14
-【Phase 2: コア実装】2026-02-14 〜 2026-02-28
+【Phase 1: 要件定義・技術設計】2026-02-10 〜 2026-02-14 ✅ 完了（02-10）
+【Phase 2: コア実装】2026-02-10 〜 2026-02-28
 【Phase 3: CLI・UX・ドキュメント】2026-03-01 〜 2026-03-07
 【Phase 4: 公開準備・リリース】2026-03-08 〜 2026-03-14
 ```
@@ -28,48 +28,59 @@ milestones:
 
 | マイルストーン | 期限 | ステータス | 進捗率 |
 |--------------|------|-----------|--------|
-| M1: 要件定義・技術設計 | 2026-02-14 | 🔄 進行中 | 86% |
-| M2: コア実装（MCP Server + Slack API） | 2026-02-28 | ⬜ 未着手 | 0% |
+| M1: 要件定義・技術設計 | 2026-02-14 | ✅ 完了 | 100% |
+| M2: コア実装（MCP Server + Slack API） | 2026-02-28 | 🔄 進行中 | 90% |
 | M3: CLI・UX・ドキュメント整備 | 2026-03-07 | ⬜ 未着手 | 0% |
 | M4: 公開準備・リリース | 2026-03-14 | ⬜ 未着手 | 0% |
 
-**全体進捗**: 21%
+**全体進捗**: 48%
 
 ---
 
 ## M1: 要件定義・技術設計
 
 **期限**: 2026-02-14
-**ステータス**: 🔄 進行中
+**ステータス**: ✅ 完了（2026-02-10）
 
 ### 完了条件
 - [x] ユーザー要件を整理し、MCP ツール仕様を確定
 - [x] Go プロジェクト構成・アーキテクチャ設計完了
 - [x] Slack App 作成手順・必要な OAuth スコープを確定
 - [x] 設定ファイル仕様（.slack-mcp.json）を確定
+- [x] テスト戦略策定
 
 ### 成果物
 - [x] docs/requirements.md（詳細版）
 - [x] docs/architecture.md（技術設計書）
 - [x] docs/slack-app-setup.md（Slack App 設定ガイド）
+- [x] docs/testing-strategy.md（テスト戦略書）
 
 ---
 
 ## M2: コア実装（MCP Server + Slack API）
 
 **期限**: 2026-02-28
-**ステータス**: ⬜ 未着手
+**ステータス**: 🔄 進行中
 
 ### 完了条件
-- [ ] MCP Server として起動し、Cursor から接続確認
-- [ ] slack_post_message ツールが動作する
-- [ ] slack_get_history ツールが動作する
-- [ ] slack_post_thread ツールが動作する
-- [ ] プロジェクトローカル設定ファイルの読み込みが動作する
+- [x] Go プロジェクト初期化・ビルド通過
+- [x] Config Layer（設定読み込み + 環境変数展開）が動作する
+- [x] Slack Client（PostMessage + ResolveChannel + GetHistory + PostThread）が動作する
+- [x] レート制限リトライが動作する
+- [x] MCP Server として起動し、Cursor から接続確認
+- [x] slack_post_message ツールが動作する
+- [x] slack_get_history ツールが動作する
+- [x] slack_post_thread ツールが動作する
+- [x] プロジェクトローカル設定ファイルの読み込みが動作する
+- [x] 全テストが通過する（go test ./... -race）
+- [x] ローカル品質保証基盤が構築されている（Makefile, pre-push hook, スモークテスト）
+- [ ] 実Slackワークスペースでの統合テスト
 
 ### 成果物
-- [ ] Go プロジェクト一式（ビルド・テスト通過）
-- [ ] MCP 3ツール実装完了
+- [x] Go プロジェクト一式（ビルド・テスト通過）
+- [x] MCP 3ツール実装完了
+- [x] 各レイヤーのユニット・インテグレーションテスト（全体カバレッジ 75.5%）
+- [x] ローカル品質保証基盤（Makefile, scripts/, .testcoverage.yml, reports/）
 
 ---
 

@@ -3,7 +3,15 @@
 
 # ビルド成果物
 /slack-fast-mcp
+/build/
 /dist/
+
+# テストレポート（ローカル生成物）
+/reports/*.txt
+/reports/*.out
+/reports/*.html
+!/reports/.gitkeep
+coverage.out
 
 # Go
 /vendor/

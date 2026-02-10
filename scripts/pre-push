@@ -1,0 +1,31 @@
+#!/bin/bash
+# pre-push hook - push 前に品質ゲートを自動実行
+#
+# インストール方法:
+#   make setup-hooks
+#   または: cp scripts/pre-push .git/hooks/pre-push && chmod +x .git/hooks/pre-push
+#
+# スキップ方法（緊急時のみ）:
+#   git push --no-verify
+
+set -euo pipefail
+
+echo ""
+echo "🔍 Pre-push quality gate running..."
+echo ""
+
+# Makefile の quality ターゲットを実行
+if make quality; then
+    echo ""
+    echo "✅ Quality gate passed. Pushing..."
+    echo ""
+    exit 0
+else
+    echo ""
+    echo "❌ Quality gate FAILED. Push rejected."
+    echo ""
+    echo "Fix the issues above, then try again."
+    echo "To skip (NOT recommended): git push --no-verify"
+    echo ""
+    exit 1
+fi
