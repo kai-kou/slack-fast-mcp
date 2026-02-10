@@ -12,8 +12,12 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// Version はアプリケーションバージョン（ビルド時に ldflags で注入）。
-var Version = "dev"
+// ビルド時に ldflags で注入されるビルド情報。
+var (
+	Version = "dev"
+	Commit  = "none"
+	Date    = "unknown"
+)
 
 // グローバルフラグ
 var (

@@ -20,12 +20,14 @@ func newVersionCmd() *cobra.Command {
 // runVersion はバージョン情報を出力する。
 func runVersion(cmd *cobra.Command, args []string) error {
 	if flagJSON {
-		fmt.Fprintf(cmd.OutOrStdout(), `{"version":"%s","go_version":"%s","platform":"%s/%s"}`+"\n",
-			Version, runtime.Version(), runtime.GOOS, runtime.GOARCH)
+		fmt.Fprintf(cmd.OutOrStdout(), `{"version":"%s","commit":"%s","date":"%s","go_version":"%s","platform":"%s/%s"}`+"\n",
+			Version, Commit, Date, runtime.Version(), runtime.GOOS, runtime.GOARCH)
 		return nil
 	}
 
 	fmt.Fprintf(cmd.OutOrStdout(), "slack-fast-mcp %s\n", Version)
+	fmt.Fprintf(cmd.OutOrStdout(), "  Commit:   %s\n", Commit)
+	fmt.Fprintf(cmd.OutOrStdout(), "  Date:     %s\n", Date)
 	fmt.Fprintf(cmd.OutOrStdout(), "  Go:       %s\n", runtime.Version())
 	fmt.Fprintf(cmd.OutOrStdout(), "  Platform: %s/%s\n", runtime.GOOS, runtime.GOARCH)
 	return nil

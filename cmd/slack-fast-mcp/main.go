@@ -22,8 +22,10 @@ var (
 )
 
 func main() {
-	// バージョンを CLI パッケージに渡す
+	// ビルド情報を CLI パッケージに渡す
 	cli.Version = version
+	cli.Commit = commit
+	cli.Date = date
 
 	// Graceful shutdown 用の context
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGTERM, syscall.SIGINT)
