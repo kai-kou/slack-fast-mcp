@@ -16,7 +16,7 @@ GOTEST := go test
 GOBUILD := go build
 GOVET := go vet
 
-.PHONY: all build test test-verbose test-race test-cover test-report quality smoke clean help setup-hooks
+.PHONY: all build test test-verbose test-race test-cover test-report quality smoke clean help setup-hooks test-integration test-integration-e2e
 
 ## ===== ビルド =====
 
@@ -132,6 +132,27 @@ _save_report:
 	@go tool cover -func=$(COVERAGE_FILE) >> $(REPORTS_DIR)/latest-report.txt 2>&1 || true
 	@cp $(REPORTS_DIR)/latest-report.txt $(REPORTS_DIR)/report-$(TIMESTAMP).txt
 
+## ===== 統合テスト =====
+
+test-integration: build ## 統合テスト（実Slack環境での動作確認）
+	@echo "==> Running integration tests (real Slack)..."
+	@if [ -z "$${SLACK_BOT_TOKEN:-}" ]; then \
+		echo "  [SKIP] SLACK_BOT_TOKEN is not set. Skipping integration tests."; \
+		echo ""; \
+		echo "  Usage:"; \
+		echo "    SLACK_BOT_TOKEN=xoxb-xxx SLACK_TEST_CHANNEL=bot-test make test-integration"; \
+		exit 0; \
+	fi
+	@if [ -z "$${SLACK_TEST_CHANNEL:-}" ]; then \
+		echo "  [SKIP] SLACK_TEST_CHANNEL is not set. Skipping integration tests."; \
+		exit 0; \
+	fi
+	$(GOTEST) ./internal/integration/ -tags=integration -v -count=1 -timeout=120s
+
+test-integration-e2e: build ## E2E統合テスト（バイナリ経由・MCP Protocol）
+	@echo "==> Running E2E integration tests..."
+	@./scripts/integration-test.sh
+
 ## ===== スモークテスト =====
 
 smoke: build ## スモークテスト（バイナリの起動・基本動作確認）
@@ -161,7 +182,9 @@ help: ## ヘルプを表示
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-18s\033[0m %s\n", $$1, $$2}'
 	@echo ""
 	@echo "Workflow:"
-	@echo "  1. make test          日常開発中の高速テスト"
-	@echo "  2. make quality       push前の品質チェック（自動）"
-	@echo "  3. make test-cover    カバレッジ確認"
-	@echo "  4. make smoke         バイナリの起動テスト"
+	@echo "  1. make test               日常開発中の高速テスト"
+	@echo "  2. make quality            push前の品質チェック（自動）"
+	@echo "  3. make test-cover         カバレッジ確認"
+	@echo "  4. make smoke              バイナリの起動テスト"
+	@echo "  5. make test-integration   実Slack環境での統合テスト（Go）"
+	@echo "  6. make test-integration-e2e  E2E統合テスト（バイナリ経由）"

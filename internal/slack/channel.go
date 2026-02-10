@@ -47,11 +47,40 @@ func (c *Client) resolveChannel(ctx context.Context, channel string) (string, er
 	return id, nil
 }
 
+// conversationTypes はチャンネル検索対象の型リスト。
+// groups:read スコープがない場合、private_channel を含めると missing_scope エラーになる。
+// まず public + private で試行し、missing_scope の場合は public のみにフォールバックする。
+var defaultConversationTypes = [][]string{
+	{"public_channel", "private_channel"}, // 最初に試行（groups:read があれば成功）
+	{"public_channel"},                    // フォールバック（channels:read のみで動作）
+}
+
 // findChannelByName は conversations.list API でチャンネル名からIDを検索する。
 // ページネーション: cursor ベース、最大5ページ（1000チャンネル）で打ち切り。
 func (c *Client) findChannelByName(ctx context.Context, name string) (string, error) {
+	for _, types := range defaultConversationTypes {
+		id, err := c.findChannelByNameWithTypes(ctx, name, types)
+		if err == nil {
+			return id, nil
+		}
+
+		// missing_scope エラーの場合はフォールバック（private_channel を外して再試行）
+		if appErr, ok := err.(*apperr.AppError); ok && appErr.Code == apperr.CodeMissingScope {
+			continue
+		}
+
+		// それ以外のエラー（channel_not_found 等）はそのまま返す
+		return "", err
+	}
+
+	return "", apperr.New(apperr.CodeChannelNotFound,
+		"指定されたチャンネルが見つかりません: "+name, nil)
+}
+
+// findChannelByNameWithTypes は指定された会話タイプでチャンネル名からIDを検索する。
+func (c *Client) findChannelByNameWithTypes(ctx context.Context, name string, types []string) (string, error) {
 	params := &slackapi.GetConversationsParameters{
-		Types:           []string{"public_channel", "private_channel"},
+		Types:           types,
 		Limit:           200,
 		ExcludeArchived: true,
 	}

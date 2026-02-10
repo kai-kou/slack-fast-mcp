@@ -69,7 +69,19 @@ fi
 # Note: stdio通信のため、パイプ環境では安定しない場合がある。
 #       MCPプロトコルレベルの検証は Go の smoke_test.go で実施。
 INIT_REQUEST='{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"smoke-test","version":"1.0.0"}}}'
-MCP_RESPONSE=$(echo "${INIT_REQUEST}" | SLACK_BOT_TOKEN="xoxb-smoke-test-token" timeout 5 "${BINARY}" 2>/dev/null || true)
+# macOS には timeout コマンドがないため、perl で代替
+if command -v timeout &>/dev/null; then
+    TIMEOUT_CMD="timeout"
+elif command -v gtimeout &>/dev/null; then
+    TIMEOUT_CMD="gtimeout"
+else
+    TIMEOUT_CMD=""
+fi
+if [ -n "${TIMEOUT_CMD}" ]; then
+    MCP_RESPONSE=$(echo "${INIT_REQUEST}" | SLACK_BOT_TOKEN="xoxb-smoke-test-token" ${TIMEOUT_CMD} 5 "${BINARY}" 2>/dev/null || true)
+else
+    MCP_RESPONSE=$(echo "${INIT_REQUEST}" | SLACK_BOT_TOKEN="xoxb-smoke-test-token" perl -e 'alarm 5; exec @ARGV' "${BINARY}" 2>/dev/null || true)
+fi
 if echo "${MCP_RESPONSE}" | grep -q '"result"\|"slack-fast-mcp"\|"serverInfo"'; then
     pass "MCP Server responds to initialize request"
 else

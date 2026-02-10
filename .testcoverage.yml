@@ -22,3 +22,5 @@ exclude:
     - internal/slack/mock_client.go
     # main.go（統合テストでカバー）
     - cmd/slack-fast-mcp/main.go
+    # 統合テスト（build tag で分離、通常テストに含めない）
+    - internal/integration/

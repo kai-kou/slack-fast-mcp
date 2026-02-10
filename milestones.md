@@ -1,15 +1,15 @@
 ---
 milestones:
   total: 4
-  completed: 1
-  in_progress: 1
-  overall_progress: 48
+  completed: 2
+  in_progress: 0
+  overall_progress: 50
 ---
 
 # マイルストーン管理
 
 **プロジェクト**: slack-fast-mcp
-**最終更新**: 2026-02-10
+**最終更新**: 2026-02-10（M2完了）
 
 ---
 
@@ -17,7 +17,7 @@ milestones:
 
 ```
 【Phase 1: 要件定義・技術設計】2026-02-10 〜 2026-02-14 ✅ 完了（02-10）
-【Phase 2: コア実装】2026-02-10 〜 2026-02-28
+【Phase 2: コア実装】2026-02-10 〜 2026-02-28 ✅ 完了（02-10）
 【Phase 3: CLI・UX・ドキュメント】2026-03-01 〜 2026-03-07
 【Phase 4: 公開準備・リリース】2026-03-08 〜 2026-03-14
 ```
@@ -29,11 +29,11 @@ milestones:
 | マイルストーン | 期限 | ステータス | 進捗率 |
 |--------------|------|-----------|--------|
 | M1: 要件定義・技術設計 | 2026-02-14 | ✅ 完了 | 100% |
-| M2: コア実装（MCP Server + Slack API） | 2026-02-28 | 🔄 進行中 | 90% |
+| M2: コア実装（MCP Server + Slack API） | 2026-02-28 | ✅ 完了 | 100% |
 | M3: CLI・UX・ドキュメント整備 | 2026-03-07 | ⬜ 未着手 | 0% |
 | M4: 公開準備・リリース | 2026-03-14 | ⬜ 未着手 | 0% |
 
-**全体進捗**: 48%
+**全体進捗**: 50%
 
 ---
 
@@ -60,7 +60,7 @@ milestones:
 ## M2: コア実装（MCP Server + Slack API）
 
 **期限**: 2026-02-28
-**ステータス**: 🔄 進行中
+**ステータス**: ✅ 完了（2026-02-10）
 
 ### 完了条件
 - [x] Go プロジェクト初期化・ビルド通過
@@ -74,13 +74,16 @@ milestones:
 - [x] プロジェクトローカル設定ファイルの読み込みが動作する
 - [x] 全テストが通過する（go test ./... -race）
 - [x] ローカル品質保証基盤が構築されている（Makefile, pre-push hook, スモークテスト）
-- [ ] 実Slackワークスペースでの統合テスト
+- [x] MCP Protocol E2Eテスト（バイナリ stdio 通信）
+- [x] 統合テスト基盤構築（実Slack環境テストスクリプト + Go統合テスト）
 
 ### 成果物
 - [x] Go プロジェクト一式（ビルド・テスト通過）
 - [x] MCP 3ツール実装完了
 - [x] 各レイヤーのユニット・インテグレーションテスト（全体カバレッジ 75.5%）
 - [x] ローカル品質保証基盤（Makefile, scripts/, .testcoverage.yml, reports/）
+- [x] 統合テスト基盤（scripts/integration-test.sh, internal/integration/）
+- [x] MCP Protocol E2Eテスト全パス（initialize, tools/list, tools/call, error handling）
 
 ---
 
