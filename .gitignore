@@ -1,0 +1,33 @@
+# Slack MCP 設定ファイル（トークンを含む可能性）
+.slack-mcp.json
+
+# ビルド成果物
+/slack-fast-mcp
+/dist/
+
+# Go
+/vendor/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE / Editor
+.idea/
+.cursor/
+*.swp
+*.swo
+*~
+
+# Pre-push review 作業ディレクトリ
+.pre-push-review/
+
+# 環境変数ファイル
+.env
+.env.local
+.env.*.local
