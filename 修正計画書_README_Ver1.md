@@ -31,9 +31,9 @@
 # slack-fast-mcp
 
 <!-- Badges -->
-[![CI](https://github.com/kai-ko/slack-fast-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/kai-ko/slack-fast-mcp/actions/workflows/ci.yml)
-[![Release](https://img.shields.io/github/v/release/kai-ko/slack-fast-mcp)](https://github.com/kai-ko/slack-fast-mcp/releases)
-[![Go Report Card](https://goreportcard.com/badge/github.com/kai-ko/slack-fast-mcp)](https://goreportcard.com/report/github.com/kai-ko/slack-fast-mcp)
+[![CI](https://github.com/kai-kou/slack-fast-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/kai-kou/slack-fast-mcp/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/kai-kou/slack-fast-mcp)](https://github.com/kai-kou/slack-fast-mcp/releases)
+[![Go Report Card](https://goreportcard.com/badge/github.com/kai-kou/slack-fast-mcp)](https://goreportcard.com/report/github.com/kai-kou/slack-fast-mcp)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
 The fastest Slack [MCP](https://modelcontextprotocol.io/) Server. Written in Go, starts in ~10ms.
@@ -231,8 +231,8 @@ Add to Claude Desktop's MCP config (Settings → Developer → MCP Servers):
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
-- 🐛 [Report a bug](https://github.com/kai-ko/slack-fast-mcp/issues/new)
-- 💡 [Request a feature](https://github.com/kai-ko/slack-fast-mcp/issues/new)
+- 🐛 [Report a bug](https://github.com/kai-kou/slack-fast-mcp/issues/new)
+- 💡 [Request a feature](https://github.com/kai-kou/slack-fast-mcp/issues/new)
 - 📖 Improve documentation
 
 See [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines.
@@ -254,12 +254,12 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines.
 
 #### Option B: Go install
 ```bash
-go install github.com/kai-ko/slack-fast-mcp/cmd/slack-fast-mcp@latest
+go install github.com/kai-kou/slack-fast-mcp/cmd/slack-fast-mcp@latest
 ```
 
 #### Option C: Build from source
 ```bash
-git clone https://github.com/kai-ko/slack-fast-mcp.git
+git clone https://github.com/kai-kou/slack-fast-mcp.git
 cd slack-fast-mcp && make build
 ```
 ```

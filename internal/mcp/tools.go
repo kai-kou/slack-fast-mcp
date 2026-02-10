@@ -5,9 +5,9 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/kai-ko/slack-fast-mcp/internal/config"
-	apperr "github.com/kai-ko/slack-fast-mcp/internal/errors"
-	slackclient "github.com/kai-ko/slack-fast-mcp/internal/slack"
+	"github.com/kai-kou/slack-fast-mcp/internal/config"
+	apperr "github.com/kai-kou/slack-fast-mcp/internal/errors"
+	slackclient "github.com/kai-kou/slack-fast-mcp/internal/slack"
 	"github.com/mark3labs/mcp-go/mcp"
 	"github.com/mark3labs/mcp-go/server"
 )

@@ -3,7 +3,7 @@ package cli
 import (
 	"os"
 
-	mcpserver "github.com/kai-ko/slack-fast-mcp/internal/mcp"
+	mcpserver "github.com/kai-kou/slack-fast-mcp/internal/mcp"
 	"github.com/mark3labs/mcp-go/server"
 	"github.com/spf13/cobra"
 )

@@ -9,7 +9,7 @@ import (
 	"regexp"
 	"strings"
 
-	apperr "github.com/kai-ko/slack-fast-mcp/internal/errors"
+	apperr "github.com/kai-kou/slack-fast-mcp/internal/errors"
 )
 
 // Config はアプリケーション設定を表す構造体。
@@ -91,7 +91,7 @@ func Load(projectDir string) (*Config, error) {
 		if rawToken := getRawTokenFromFiles(globalPath, localPath); tokenPattern.MatchString(rawToken) {
 			fmt.Fprintf(os.Stderr, "WARNING: Token appears to be hardcoded in config file.\n")
 			fmt.Fprintf(os.Stderr, "Consider using environment variable reference: \"${SLACK_BOT_TOKEN}\"\n")
-			fmt.Fprintf(os.Stderr, "See: https://github.com/kai-ko/slack-fast-mcp#security\n")
+			fmt.Fprintf(os.Stderr, "See: https://github.com/kai-kou/slack-fast-mcp#security\n")
 		}
 	}
 

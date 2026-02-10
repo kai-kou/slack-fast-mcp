@@ -2,8 +2,8 @@
 package mcp
 
 import (
-	"github.com/kai-ko/slack-fast-mcp/internal/config"
-	slackclient "github.com/kai-ko/slack-fast-mcp/internal/slack"
+	"github.com/kai-kou/slack-fast-mcp/internal/config"
+	slackclient "github.com/kai-kou/slack-fast-mcp/internal/slack"
 	"github.com/mark3labs/mcp-go/server"
 )
 

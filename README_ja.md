@@ -1,9 +1,9 @@
 # slack-fast-mcp
 
 <!-- Badges -->
-[![CI](https://github.com/kai-ko/slack-fast-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/kai-ko/slack-fast-mcp/actions/workflows/ci.yml)
-[![Release](https://img.shields.io/github/v/release/kai-ko/slack-fast-mcp)](https://github.com/kai-ko/slack-fast-mcp/releases)
-[![Go Report Card](https://goreportcard.com/badge/github.com/kai-ko/slack-fast-mcp)](https://goreportcard.com/report/github.com/kai-ko/slack-fast-mcp)
+[![CI](https://github.com/kai-kou/slack-fast-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/kai-kou/slack-fast-mcp/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/kai-kou/slack-fast-mcp)](https://github.com/kai-kou/slack-fast-mcp/releases)
+[![Go Report Card](https://goreportcard.com/badge/github.com/kai-kou/slack-fast-mcp)](https://goreportcard.com/report/github.com/kai-kou/slack-fast-mcp)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
 最速の Slack [MCP](https://modelcontextprotocol.io/) Server。Go で書かれ、起動時間わずか ~10ms。
@@ -43,12 +43,13 @@ MCP Server はリクエストごとにプロセスが起動します。**起動�
 
 #### 方法 A: バイナリダウンロード（推奨）
 
-[GitHub Releases](https://github.com/kai-ko/slack-fast-mcp/releases) から最新バイナリをダウンロード:
+[GitHub Releases](https://github.com/kai-kou/slack-fast-mcp/releases) から最新バイナリをダウンロード:
 
 ```bash
 # macOS (Apple Silicon)
-curl -L https://github.com/kai-ko/slack-fast-mcp/releases/latest/download/slack-fast-mcp_darwin_arm64 -o /usr/local/bin/slack-fast-mcp
-chmod +x /usr/local/bin/slack-fast-mcp
+curl -LO https://github.com/kai-kou/slack-fast-mcp/releases/latest/download/slack-fast-mcp_Darwin_arm64.tar.gz
+tar xzf slack-fast-mcp_Darwin_arm64.tar.gz
+sudo mv slack-fast-mcp /usr/local/bin/
 ```
 
 <details>
@@ -56,15 +57,18 @@ chmod +x /usr/local/bin/slack-fast-mcp
 
 ```bash
 # macOS (Intel)
-curl -L https://github.com/kai-ko/slack-fast-mcp/releases/latest/download/slack-fast-mcp_darwin_amd64 -o /usr/local/bin/slack-fast-mcp
-chmod +x /usr/local/bin/slack-fast-mcp
+curl -LO https://github.com/kai-kou/slack-fast-mcp/releases/latest/download/slack-fast-mcp_Darwin_amd64.tar.gz
+tar xzf slack-fast-mcp_Darwin_amd64.tar.gz
+sudo mv slack-fast-mcp /usr/local/bin/
 
 # Linux (x86_64)
-curl -L https://github.com/kai-ko/slack-fast-mcp/releases/latest/download/slack-fast-mcp_linux_amd64 -o /usr/local/bin/slack-fast-mcp
-chmod +x /usr/local/bin/slack-fast-mcp
+curl -LO https://github.com/kai-kou/slack-fast-mcp/releases/latest/download/slack-fast-mcp_Linux_amd64.tar.gz
+tar xzf slack-fast-mcp_Linux_amd64.tar.gz
+sudo mv slack-fast-mcp /usr/local/bin/
 
 # Windows (PowerShell)
-Invoke-WebRequest -Uri "https://github.com/kai-ko/slack-fast-mcp/releases/latest/download/slack-fast-mcp_windows_amd64.exe" -OutFile "$env:USERPROFILE\bin\slack-fast-mcp.exe"
+Invoke-WebRequest -Uri "https://github.com/kai-kou/slack-fast-mcp/releases/latest/download/slack-fast-mcp_Windows_amd64.zip" -OutFile slack-fast-mcp.zip
+Expand-Archive slack-fast-mcp.zip -DestinationPath "$env:USERPROFILE\bin"
 ```
 
 > **Windows PATH 設定:** `$env:USERPROFILE\bin` が PATH に含まれていない場合:
@@ -80,13 +84,13 @@ Invoke-WebRequest -Uri "https://github.com/kai-ko/slack-fast-mcp/releases/latest
 #### 方法 B: Go install
 
 ```bash
-go install github.com/kai-ko/slack-fast-mcp/cmd/slack-fast-mcp@latest
+go install github.com/kai-kou/slack-fast-mcp/cmd/slack-fast-mcp@latest
 ```
 
 #### 方法 C: ソースからビルド
 
 ```bash
-git clone https://github.com/kai-ko/slack-fast-mcp.git
+git clone https://github.com/kai-kou/slack-fast-mcp.git
 cd slack-fast-mcp && make build
 ```
 
@@ -361,8 +365,8 @@ slack-fast-mcp setup
 
 コントリビュート大歓迎です！お気軽に Pull Request を送ってください。
 
-- [バグ報告](https://github.com/kai-ko/slack-fast-mcp/issues/new)
-- [機能リクエスト](https://github.com/kai-ko/slack-fast-mcp/issues/new)
+- [バグ報告](https://github.com/kai-kou/slack-fast-mcp/issues/new)
+- [機能リクエスト](https://github.com/kai-kou/slack-fast-mcp/issues/new)
 - ドキュメント改善
 
 ガイドラインは [CONTRIBUTING.md](./CONTRIBUTING.md) を参照してください。
@@ -370,7 +374,7 @@ slack-fast-mcp setup
 ## ソースからビルド
 
 ```bash
-git clone https://github.com/kai-ko/slack-fast-mcp.git
+git clone https://github.com/kai-kou/slack-fast-mcp.git
 cd slack-fast-mcp
 make build
 ```

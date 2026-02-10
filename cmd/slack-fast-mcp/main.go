@@ -10,12 +10,16 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/kai-ko/slack-fast-mcp/internal/cli"
-	apperr "github.com/kai-ko/slack-fast-mcp/internal/errors"
+	"github.com/kai-kou/slack-fast-mcp/internal/cli"
+	apperr "github.com/kai-kou/slack-fast-mcp/internal/errors"
 )
 
-// version はビルド時に ldflags で注入される。
-var version = "dev"
+// ビルド時に ldflags で注入される変数。
+var (
+	version = "dev"
+	commit  = "none"
+	date    = "unknown"
+)
 
 func main() {
 	// バージョンを CLI パッケージに渡す

@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	slackclient "github.com/kai-ko/slack-fast-mcp/internal/slack"
+	slackclient "github.com/kai-kou/slack-fast-mcp/internal/slack"
 )
 
 // TestVersionCmd は version サブコマンドのテスト。

@@ -1,4 +1,4 @@
-module github.com/kai-ko/slack-fast-mcp
+module github.com/kai-kou/slack-fast-mcp
 
 go 1.25.0
 

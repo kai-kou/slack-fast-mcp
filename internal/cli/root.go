@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/kai-ko/slack-fast-mcp/internal/config"
-	slackclient "github.com/kai-ko/slack-fast-mcp/internal/slack"
+	"github.com/kai-kou/slack-fast-mcp/internal/config"
+	slackclient "github.com/kai-kou/slack-fast-mcp/internal/slack"
 	"github.com/spf13/cobra"
 )
 

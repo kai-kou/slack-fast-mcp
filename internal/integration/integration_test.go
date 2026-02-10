@@ -17,8 +17,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/kai-ko/slack-fast-mcp/internal/config"
-	mcpserver "github.com/kai-ko/slack-fast-mcp/internal/mcp"
+	"github.com/kai-kou/slack-fast-mcp/internal/config"
+	mcpserver "github.com/kai-kou/slack-fast-mcp/internal/mcp"
 	"github.com/mark3labs/mcp-go/mcp"
 )
 

@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	apperr "github.com/kai-ko/slack-fast-mcp/internal/errors"
+	apperr "github.com/kai-kou/slack-fast-mcp/internal/errors"
 	slackapi "github.com/slack-go/slack"
 )
 

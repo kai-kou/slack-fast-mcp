@@ -1,9 +1,9 @@
 # slack-fast-mcp
 
 <!-- Badges -->
-[![CI](https://github.com/kai-ko/slack-fast-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/kai-ko/slack-fast-mcp/actions/workflows/ci.yml)
-[![Release](https://img.shields.io/github/v/release/kai-ko/slack-fast-mcp)](https://github.com/kai-ko/slack-fast-mcp/releases)
-[![Go Report Card](https://goreportcard.com/badge/github.com/kai-ko/slack-fast-mcp)](https://goreportcard.com/report/github.com/kai-ko/slack-fast-mcp)
+[![CI](https://github.com/kai-kou/slack-fast-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/kai-kou/slack-fast-mcp/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/kai-kou/slack-fast-mcp)](https://github.com/kai-kou/slack-fast-mcp/releases)
+[![Go Report Card](https://goreportcard.com/badge/github.com/kai-kou/slack-fast-mcp)](https://goreportcard.com/report/github.com/kai-kou/slack-fast-mcp)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
 The fastest Slack [MCP](https://modelcontextprotocol.io/) Server. Written in Go, starts in ~10ms.
@@ -43,12 +43,13 @@ MCP Servers start a new process for each request. **Startup speed directly impac
 
 #### Option A: Download binary (recommended)
 
-Download the latest binary from [GitHub Releases](https://github.com/kai-ko/slack-fast-mcp/releases):
+Download the latest binary from [GitHub Releases](https://github.com/kai-kou/slack-fast-mcp/releases):
 
 ```bash
 # macOS (Apple Silicon)
-curl -L https://github.com/kai-ko/slack-fast-mcp/releases/latest/download/slack-fast-mcp_darwin_arm64 -o /usr/local/bin/slack-fast-mcp
-chmod +x /usr/local/bin/slack-fast-mcp
+curl -LO https://github.com/kai-kou/slack-fast-mcp/releases/latest/download/slack-fast-mcp_Darwin_arm64.tar.gz
+tar xzf slack-fast-mcp_Darwin_arm64.tar.gz
+sudo mv slack-fast-mcp /usr/local/bin/
 ```
 
 <details>
@@ -56,15 +57,18 @@ chmod +x /usr/local/bin/slack-fast-mcp
 
 ```bash
 # macOS (Intel)
-curl -L https://github.com/kai-ko/slack-fast-mcp/releases/latest/download/slack-fast-mcp_darwin_amd64 -o /usr/local/bin/slack-fast-mcp
-chmod +x /usr/local/bin/slack-fast-mcp
+curl -LO https://github.com/kai-kou/slack-fast-mcp/releases/latest/download/slack-fast-mcp_Darwin_amd64.tar.gz
+tar xzf slack-fast-mcp_Darwin_amd64.tar.gz
+sudo mv slack-fast-mcp /usr/local/bin/
 
 # Linux (x86_64)
-curl -L https://github.com/kai-ko/slack-fast-mcp/releases/latest/download/slack-fast-mcp_linux_amd64 -o /usr/local/bin/slack-fast-mcp
-chmod +x /usr/local/bin/slack-fast-mcp
+curl -LO https://github.com/kai-kou/slack-fast-mcp/releases/latest/download/slack-fast-mcp_Linux_amd64.tar.gz
+tar xzf slack-fast-mcp_Linux_amd64.tar.gz
+sudo mv slack-fast-mcp /usr/local/bin/
 
 # Windows (PowerShell)
-Invoke-WebRequest -Uri "https://github.com/kai-ko/slack-fast-mcp/releases/latest/download/slack-fast-mcp_windows_amd64.exe" -OutFile "$env:USERPROFILE\bin\slack-fast-mcp.exe"
+Invoke-WebRequest -Uri "https://github.com/kai-kou/slack-fast-mcp/releases/latest/download/slack-fast-mcp_Windows_amd64.zip" -OutFile slack-fast-mcp.zip
+Expand-Archive slack-fast-mcp.zip -DestinationPath "$env:USERPROFILE\bin"
 ```
 
 > **Windows PATH:** If `$env:USERPROFILE\bin` is not in your PATH, add it:
@@ -80,13 +84,13 @@ Invoke-WebRequest -Uri "https://github.com/kai-ko/slack-fast-mcp/releases/latest
 #### Option B: Go install
 
 ```bash
-go install github.com/kai-ko/slack-fast-mcp/cmd/slack-fast-mcp@latest
+go install github.com/kai-kou/slack-fast-mcp/cmd/slack-fast-mcp@latest
 ```
 
 #### Option C: Build from source
 
 ```bash
-git clone https://github.com/kai-ko/slack-fast-mcp.git
+git clone https://github.com/kai-kou/slack-fast-mcp.git
 cd slack-fast-mcp && make build
 ```
 
@@ -361,8 +365,8 @@ For more details, see the [Slack App Setup Guide](./docs/slack-app-setup.md).
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
-- [Report a bug](https://github.com/kai-ko/slack-fast-mcp/issues/new)
-- [Request a feature](https://github.com/kai-ko/slack-fast-mcp/issues/new)
+- [Report a bug](https://github.com/kai-kou/slack-fast-mcp/issues/new)
+- [Request a feature](https://github.com/kai-kou/slack-fast-mcp/issues/new)
 - Improve documentation
 
 See [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines.
@@ -370,7 +374,7 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines.
 ## Building from Source
 
 ```bash
-git clone https://github.com/kai-ko/slack-fast-mcp.git
+git clone https://github.com/kai-kou/slack-fast-mcp.git
 cd slack-fast-mcp
 make build
 ```

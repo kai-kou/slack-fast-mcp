@@ -2,14 +2,14 @@
 milestones:
   total: 4
   completed: 3
-  in_progress: 0
-  overall_progress: 75
+  in_progress: 1
+  overall_progress: 90
 ---
 
 # マイルストーン管理
 
 **プロジェクト**: slack-fast-mcp
-**最終更新**: 2026-02-10（M3完了）
+**最終更新**: 2026-02-10（M4進行中）
 
 ---
 
@@ -19,7 +19,7 @@ milestones:
 【Phase 1: 要件定義・技術設計】2026-02-10 〜 2026-02-14 ✅ 完了（02-10）
 【Phase 2: コア実装】2026-02-10 〜 2026-02-28 ✅ 完了（02-10）
 【Phase 3: CLI・UX・ドキュメント】2026-02-10 〜 2026-03-07 ✅ 完了（02-10）
-【Phase 4: 公開準備・リリース】2026-03-08 〜 2026-03-14
+【Phase 4: 公開準備・リリース】2026-02-10 〜 2026-03-14 🔄 進行中
 ```
 
 ---
@@ -31,9 +31,9 @@ milestones:
 | M1: 要件定義・技術設計 | 2026-02-14 | ✅ 完了 | 100% |
 | M2: コア実装（MCP Server + Slack API） | 2026-02-28 | ✅ 完了 | 100% |
 | M3: CLI・UX・ドキュメント整備 | 2026-03-07 | ✅ 完了 | 100% |
-| M4: 公開準備・リリース | 2026-03-14 | ⬜ 未着手 | 0% |
+| M4: 公開準備・リリース | 2026-03-14 | 🔄 進行中 | 89% |
 
-**全体進捗**: 75%
+**全体進捗**: 90%
 
 ---
 
@@ -110,18 +110,20 @@ milestones:
 ## M4: 公開準備・リリース
 
 **期限**: 2026-03-14
-**ステータス**: ⬜ 未着手
+**ステータス**: 🔄 進行中（2026-02-10）
 
 ### 完了条件
-- [ ] GitHub Actions で CI/CD パイプラインが動作する
-- [ ] GoReleaser でクロスプラットフォームバイナリが自動ビルドされる
-- [ ] Mac / Windows でのインストール・動作確認完了
-- [ ] ライセンス・CONTRIBUTING.md 等が整備されている
+- [x] GitHub Actions で CI/CD パイプラインが動作する
+- [x] GoReleaser でクロスプラットフォームバイナリが自動ビルドされる
+- [x] Mac / Windows でのインストール・動作確認完了
+- [x] ライセンス・CONTRIBUTING.md 等が整備されている
 
 ### 成果物
-- [ ] GitHub リポジトリ（パブリック or プライベート）
-- [ ] v0.1.0 リリース（GitHub Releases）
-- [ ] CI/CD パイプライン
+- [x] GitHub リポジトリ（パブリック）— description, topics 設定済み
+- [ ] v0.1.0 リリース（GitHub Releases）— タグ作成・push 待ち
+- [x] CI/CD パイプライン（ci.yml + release.yml）
+- [x] GoReleaser 設定（.goreleaser.yml）
+- [x] CONTRIBUTING.md
 
 ---
 

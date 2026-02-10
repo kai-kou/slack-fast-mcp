@@ -72,7 +72,7 @@ Quick Start は明確で、初見ユーザーが迷わずにセットアップ�
 
 **現状**: バイナリダウンロードとソースビルドのみ。
 
-**推奨**: Go 開発者にとって最も馴染みのある `go install github.com/kai-ko/slack-fast-mcp@latest` を追加。Homebrew 対応は将来的な検討事項として言及のみでも可。
+**推奨**: Go 開発者にとって最も馴染みのある `go install github.com/kai-kou/slack-fast-mcp@latest` を追加。Homebrew 対応は将来的な検討事項として言及のみでも可。
 
 ### E-05: バージョン確認の手順がない（重要度: 低）
 

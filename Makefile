@@ -16,7 +16,7 @@ GOTEST := go test
 GOBUILD := go build
 GOVET := go vet
 
-.PHONY: all build test test-verbose test-race test-cover test-report quality smoke clean help setup-hooks test-integration test-integration-e2e
+.PHONY: all build test test-verbose test-race test-cover test-report quality smoke clean help setup-hooks test-integration test-integration-e2e release-dry-run release-snapshot lint
 
 ## ===== ビルド =====
 
@@ -158,6 +158,22 @@ test-integration-e2e: build ## E2E統合テスト（バイナリ経由・MCP Pro
 smoke: build ## スモークテスト（バイナリの起動・基本動作確認）
 	@echo "==> Running smoke test..."
 	@./scripts/smoke-test.sh $(BUILD_DIR)/$(BINARY_NAME)
+
+## ===== リリース =====
+
+lint: ## golangci-lint 実行
+	@echo "==> Running golangci-lint..."
+	@golangci-lint run ./... || echo "  [WARN] golangci-lint not installed. Run: go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest"
+
+release-dry-run: ## GoReleaser ドライラン（リリース内容の確認）
+	@echo "==> GoReleaser dry run..."
+	@goreleaser release --snapshot --clean --skip=publish
+	@echo "==> Artifacts in ./dist/"
+
+release-snapshot: ## GoReleaser スナップショットビルド（ローカルテスト用）
+	@echo "==> GoReleaser snapshot build..."
+	@goreleaser build --snapshot --clean
+	@echo "==> Binaries in ./dist/"
 
 ## ===== セットアップ =====
 

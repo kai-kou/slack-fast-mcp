@@ -483,7 +483,8 @@ debug レベルのログ出力時に、機密情報が露出しないようマ�
 - **インストール手順**: PowerShell でのダウンロード・配置手順をREADMEに記載
   ```powershell
   # Windows PowerShell でのインストール例
-  Invoke-WebRequest -Uri "https://github.com/xxx/slack-fast-mcp/releases/latest/download/slack-fast-mcp_windows_amd64.exe" -OutFile "$env:USERPROFILE\bin\slack-fast-mcp.exe"
+  Invoke-WebRequest -Uri "https://github.com/kai-kou/slack-fast-mcp/releases/latest/download/slack-fast-mcp_Windows_amd64.zip" -OutFile slack-fast-mcp.zip
+  Expand-Archive slack-fast-mcp.zip -DestinationPath "$env:USERPROFILE\bin"
   ```
 - **PATH設定**: `$env:USERPROFILE\bin` をPATHに追加する手順を案内
 
