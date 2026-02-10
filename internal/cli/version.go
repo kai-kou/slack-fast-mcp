@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"encoding/json"
 	"fmt"
 	"runtime"
 
@@ -20,9 +21,16 @@ func newVersionCmd() *cobra.Command {
 // runVersion はバージョン情報を出力する。
 func runVersion(cmd *cobra.Command, args []string) error {
 	if flagJSON {
-		fmt.Fprintf(cmd.OutOrStdout(), `{"version":"%s","commit":"%s","date":"%s","go_version":"%s","platform":"%s/%s"}`+"\n",
-			Version, Commit, Date, runtime.Version(), runtime.GOOS, runtime.GOARCH)
-		return nil
+		out := map[string]string{
+			"version":    Version,
+			"commit":     Commit,
+			"date":       Date,
+			"go_version": runtime.Version(),
+			"platform":   runtime.GOOS + "/" + runtime.GOARCH,
+		}
+		encoder := json.NewEncoder(cmd.OutOrStdout())
+		encoder.SetEscapeHTML(false)
+		return encoder.Encode(out)
 	}
 
 	fmt.Fprintf(cmd.OutOrStdout(), "slack-fast-mcp %s\n", Version)
