@@ -368,6 +368,131 @@ func TestClient_ResolveChannel_Patterns(t *testing.T) {
 	}
 }
 
+// --- S20: AddReaction 正常系 ---
+func TestClient_AddReaction_Success(t *testing.T) {
+	_, api := newMockSlackServer(t, map[string]http.HandlerFunc{
+		"/reactions.add": func(w http.ResponseWriter, r *http.Request) {
+			jsonResponse(w, map[string]any{
+				"ok": true,
+			})
+		},
+	})
+
+	client := NewClientWithAPI(api)
+	result, err := client.AddReaction(context.Background(), "C01234ABCDE", "1234567890.123456", "thumbsup")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if result.Channel != "C01234ABCDE" {
+		t.Errorf("Channel = %q, want %q", result.Channel, "C01234ABCDE")
+	}
+	if result.Timestamp != "1234567890.123456" {
+		t.Errorf("Timestamp = %q, want %q", result.Timestamp, "1234567890.123456")
+	}
+	if result.Reaction != "thumbsup" {
+		t.Errorf("Reaction = %q, want %q", result.Reaction, "thumbsup")
+	}
+}
+
+// --- S21: AddReaction already_reacted エラー ---
+func TestClient_AddReaction_AlreadyReacted(t *testing.T) {
+	_, api := newMockSlackServer(t, map[string]http.HandlerFunc{
+		"/reactions.add": func(w http.ResponseWriter, r *http.Request) {
+			jsonResponse(w, map[string]any{
+				"ok":    false,
+				"error": "already_reacted",
+			})
+		},
+	})
+
+	client := NewClientWithAPI(api)
+	_, err := client.AddReaction(context.Background(), "C01234ABCDE", "1234567890.123456", "thumbsup")
+	if err == nil {
+		t.Fatal("expected error, got nil")
+	}
+	if !strings.Contains(err.Error(), "already_reacted") {
+		t.Errorf("error = %q, want to contain %q", err.Error(), "already_reacted")
+	}
+}
+
+// --- S22: RemoveReaction 正常系 ---
+func TestClient_RemoveReaction_Success(t *testing.T) {
+	_, api := newMockSlackServer(t, map[string]http.HandlerFunc{
+		"/reactions.remove": func(w http.ResponseWriter, r *http.Request) {
+			jsonResponse(w, map[string]any{
+				"ok": true,
+			})
+		},
+	})
+
+	client := NewClientWithAPI(api)
+	result, err := client.RemoveReaction(context.Background(), "C01234ABCDE", "1234567890.123456", "thumbsup")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if result.Channel != "C01234ABCDE" {
+		t.Errorf("Channel = %q, want %q", result.Channel, "C01234ABCDE")
+	}
+	if result.Reaction != "thumbsup" {
+		t.Errorf("Reaction = %q, want %q", result.Reaction, "thumbsup")
+	}
+}
+
+// --- S23: RemoveReaction no_reaction エラー ---
+func TestClient_RemoveReaction_NoReaction(t *testing.T) {
+	_, api := newMockSlackServer(t, map[string]http.HandlerFunc{
+		"/reactions.remove": func(w http.ResponseWriter, r *http.Request) {
+			jsonResponse(w, map[string]any{
+				"ok":    false,
+				"error": "no_reaction",
+			})
+		},
+	})
+
+	client := NewClientWithAPI(api)
+	_, err := client.RemoveReaction(context.Background(), "C01234ABCDE", "1234567890.123456", "thumbsup")
+	if err == nil {
+		t.Fatal("expected error, got nil")
+	}
+	if !strings.Contains(err.Error(), "no_reaction") {
+		t.Errorf("error = %q, want to contain %q", err.Error(), "no_reaction")
+	}
+}
+
+// --- S24: AddReaction チャンネル名解決 ---
+func TestClient_AddReaction_WithChannelName(t *testing.T) {
+	_, api := newMockSlackServer(t, map[string]http.HandlerFunc{
+		"/conversations.list": func(w http.ResponseWriter, r *http.Request) {
+			jsonResponse(w, map[string]any{
+				"ok": true,
+				"channels": []map[string]any{
+					{"id": "C09876ZZZZZ", "name": "general"},
+				},
+				"response_metadata": map[string]any{
+					"next_cursor": "",
+				},
+			})
+		},
+		"/reactions.add": func(w http.ResponseWriter, r *http.Request) {
+			jsonResponse(w, map[string]any{
+				"ok": true,
+			})
+		},
+	})
+
+	client := NewClientWithAPI(api)
+	result, err := client.AddReaction(context.Background(), "general", "1234567890.123456", "heart")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if result.Channel != "C09876ZZZZZ" {
+		t.Errorf("Channel = %q, want %q", result.Channel, "C09876ZZZZZ")
+	}
+	if result.ChannelName != "general" {
+		t.Errorf("ChannelName = %q, want %q", result.ChannelName, "general")
+	}
+}
+
 // --- classifySlackError テスト ---
 func TestClassifySlackError(t *testing.T) {
 	tests := []struct {
@@ -381,6 +506,9 @@ func TestClassifySlackError(t *testing.T) {
 		{"missing_scope", "missing_scope"},
 		{"thread_not_found", "thread_not_found"},
 		{"no_text", "no_text"},
+		{"already_reacted", "already_reacted"},
+		{"no_reaction", "no_reaction"},
+		{"invalid_name", "invalid_reaction"},
 		{"unknown_error", "network_error"},
 	}
 

@@ -73,7 +73,7 @@ func TestHelpCmd(t *testing.T) {
 	output := buf.String()
 
 	// 必要なサブコマンドが表示されているか
-	expectedSubcommands := []string{"serve", "post", "history", "reply", "setup", "version"}
+	expectedSubcommands := []string{"serve", "post", "history", "reply", "react", "unreact", "setup", "version"}
 	for _, sub := range expectedSubcommands {
 		if !strings.Contains(output, sub) {
 			t.Errorf("expected subcommand '%s' in help output, got: %s", sub, output)
@@ -242,6 +242,8 @@ func setupMockClient(t *testing.T, mock *slackclient.MockClient) {
 		flagJSON = false
 		flagMessage = ""
 		flagThreadTS = ""
+		flagTimestamp = ""
+		flagReaction = ""
 		flagLimit = 10
 		flagOldest = ""
 		flagLatest = ""
@@ -558,6 +560,201 @@ func TestAppendToGitignore(t *testing.T) {
 			t.Error("should have newline between entries")
 		}
 	})
+}
+
+// TestReactCmdRequiresFlags は react コマンドの必須フラグチェック。
+func TestReactCmdRequiresFlags(t *testing.T) {
+	t.Run("missing timestamp", func(t *testing.T) {
+		rootCmd := NewRootCmd()
+		buf := new(bytes.Buffer)
+		rootCmd.SetOut(buf)
+		rootCmd.SetErr(buf)
+		rootCmd.SetArgs([]string{"react", "--reaction", "thumbsup"})
+
+		err := rootCmd.Execute()
+		if err == nil {
+			t.Fatal("expected error when timestamp is not provided")
+		}
+	})
+
+	t.Run("missing reaction", func(t *testing.T) {
+		rootCmd := NewRootCmd()
+		buf := new(bytes.Buffer)
+		rootCmd.SetOut(buf)
+		rootCmd.SetErr(buf)
+		rootCmd.SetArgs([]string{"react", "--timestamp", "1234567890.123456"})
+
+		err := rootCmd.Execute()
+		if err == nil {
+			t.Fatal("expected error when reaction is not provided")
+		}
+	})
+}
+
+// TestUnreactCmdRequiresFlags は unreact コマンドの必須フラグチェック。
+func TestUnreactCmdRequiresFlags(t *testing.T) {
+	t.Run("missing timestamp", func(t *testing.T) {
+		rootCmd := NewRootCmd()
+		buf := new(bytes.Buffer)
+		rootCmd.SetOut(buf)
+		rootCmd.SetErr(buf)
+		rootCmd.SetArgs([]string{"unreact", "--reaction", "thumbsup"})
+
+		err := rootCmd.Execute()
+		if err == nil {
+			t.Fatal("expected error when timestamp is not provided")
+		}
+	})
+
+	t.Run("missing reaction", func(t *testing.T) {
+		rootCmd := NewRootCmd()
+		buf := new(bytes.Buffer)
+		rootCmd.SetOut(buf)
+		rootCmd.SetErr(buf)
+		rootCmd.SetArgs([]string{"unreact", "--timestamp", "1234567890.123456"})
+
+		err := rootCmd.Execute()
+		if err == nil {
+			t.Fatal("expected error when reaction is not provided")
+		}
+	})
+}
+
+// TestReactCmdWithMock はモックを使った react コマンドテスト。
+func TestReactCmdWithMock(t *testing.T) {
+	t.Setenv("SLACK_BOT_TOKEN", "xoxb-test-token")
+	t.Setenv("SLACK_DEFAULT_CHANNEL", "")
+
+	mock := &slackclient.MockClient{
+		AddReactionFunc: func(ctx context.Context, channel, timestamp, reaction string) (*slackclient.ReactionResult, error) {
+			return &slackclient.ReactionResult{
+				Channel:     "C12345",
+				ChannelName: "general",
+				Timestamp:   timestamp,
+				Reaction:    reaction,
+			}, nil
+		},
+	}
+	setupMockClient(t, mock)
+
+	t.Run("text output", func(t *testing.T) {
+		rootCmd := NewRootCmd()
+		buf := new(bytes.Buffer)
+		rootCmd.SetOut(buf)
+		rootCmd.SetErr(buf)
+		rootCmd.SetArgs([]string{"react", "--channel", "general", "--timestamp", "1234567890.123456", "--reaction", "thumbsup"})
+
+		if err := rootCmd.Execute(); err != nil {
+			t.Fatalf("react command failed: %v", err)
+		}
+
+		output := buf.String()
+		if !strings.Contains(output, "Reaction") {
+			t.Errorf("expected success message, got: %s", output)
+		}
+		if !strings.Contains(output, "thumbsup") {
+			t.Errorf("expected reaction name in output, got: %s", output)
+		}
+	})
+
+	t.Run("json output", func(t *testing.T) {
+		rootCmd := NewRootCmd()
+		buf := new(bytes.Buffer)
+		rootCmd.SetOut(buf)
+		rootCmd.SetErr(buf)
+		rootCmd.SetArgs([]string{"react", "--channel", "general", "--timestamp", "1234567890.123456", "--reaction", "heart", "--json"})
+
+		if err := rootCmd.Execute(); err != nil {
+			t.Fatalf("react --json failed: %v", err)
+		}
+
+		output := buf.String()
+		if !strings.Contains(output, `"ok"`) {
+			t.Errorf("expected JSON ok field, got: %s", output)
+		}
+		if !strings.Contains(output, `"reaction"`) {
+			t.Errorf("expected JSON reaction field, got: %s", output)
+		}
+	})
+}
+
+// TestUnreactCmdWithMock はモックを使った unreact コマンドテスト。
+func TestUnreactCmdWithMock(t *testing.T) {
+	t.Setenv("SLACK_BOT_TOKEN", "xoxb-test-token")
+	t.Setenv("SLACK_DEFAULT_CHANNEL", "")
+
+	mock := &slackclient.MockClient{
+		RemoveReactionFunc: func(ctx context.Context, channel, timestamp, reaction string) (*slackclient.ReactionResult, error) {
+			return &slackclient.ReactionResult{
+				Channel:     "C12345",
+				ChannelName: "general",
+				Timestamp:   timestamp,
+				Reaction:    reaction,
+			}, nil
+		},
+	}
+	setupMockClient(t, mock)
+
+	t.Run("text output", func(t *testing.T) {
+		rootCmd := NewRootCmd()
+		buf := new(bytes.Buffer)
+		rootCmd.SetOut(buf)
+		rootCmd.SetErr(buf)
+		rootCmd.SetArgs([]string{"unreact", "--channel", "general", "--timestamp", "1234567890.123456", "--reaction", "thumbsup"})
+
+		if err := rootCmd.Execute(); err != nil {
+			t.Fatalf("unreact command failed: %v", err)
+		}
+
+		output := buf.String()
+		if !strings.Contains(output, "Reaction") {
+			t.Errorf("expected success message, got: %s", output)
+		}
+		if !strings.Contains(output, "removed") {
+			t.Errorf("expected 'removed' in output, got: %s", output)
+		}
+	})
+
+	t.Run("json output", func(t *testing.T) {
+		rootCmd := NewRootCmd()
+		buf := new(bytes.Buffer)
+		rootCmd.SetOut(buf)
+		rootCmd.SetErr(buf)
+		rootCmd.SetArgs([]string{"unreact", "--channel", "general", "--timestamp", "1234567890.123456", "--reaction", "eyes", "--json"})
+
+		if err := rootCmd.Execute(); err != nil {
+			t.Fatalf("unreact --json failed: %v", err)
+		}
+
+		output := buf.String()
+		if !strings.Contains(output, `"ok"`) {
+			t.Errorf("expected JSON ok field, got: %s", output)
+		}
+		if !strings.Contains(output, `"reaction"`) {
+			t.Errorf("expected JSON reaction field, got: %s", output)
+		}
+	})
+}
+
+// TestReactCmdHelp は react サブコマンドのヘルプ出力テスト。
+func TestReactCmdHelp(t *testing.T) {
+	rootCmd := NewRootCmd()
+	buf := new(bytes.Buffer)
+	rootCmd.SetOut(buf)
+	rootCmd.SetErr(buf)
+	rootCmd.SetArgs([]string{"react", "--help"})
+
+	if err := rootCmd.Execute(); err != nil {
+		t.Fatalf("react help failed: %v", err)
+	}
+
+	output := buf.String()
+	if !strings.Contains(output, "--timestamp") {
+		t.Errorf("expected --timestamp flag in react help, got: %s", output)
+	}
+	if !strings.Contains(output, "--reaction") {
+		t.Errorf("expected --reaction flag in react help, got: %s", output)
+	}
 }
 
 // TestNoChannelError はチャンネル未指定かつデフォルト未設定のエラーテスト。
