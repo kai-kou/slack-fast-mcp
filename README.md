@@ -12,8 +12,9 @@ Post messages, read history, and reply to threads from AI editors like [Cursor](
 
 [Japanese / 日本語版はこちら](./README_ja.md)
 
-<!-- TODO: Replace with actual demo GIF (record with asciinema + svg-term-cli) -->
-<!-- ![Demo](./docs/assets/demo.gif) -->
+<p align="center">
+  <img src="./docs/assets/hero-image.png" alt="slack-fast-mcp overview" width="800">
+</p>
 
 ---
 

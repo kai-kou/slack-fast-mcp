@@ -12,8 +12,9 @@ AI エディタ（[Cursor](https://cursor.com)、[Windsurf](https://codeium.com/
 
 [English / English README](./README.md)
 
-<!-- TODO: 実際のデモ GIF に差し替え（asciinema + svg-term-cli で録画） -->
-<!-- ![Demo](./docs/assets/demo.gif) -->
+<p align="center">
+  <img src="./docs/assets/hero-image-ja.png" alt="slack-fast-mcp 概要" width="800">
+</p>
 
 ---
 
