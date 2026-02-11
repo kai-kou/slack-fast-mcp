@@ -15,6 +15,12 @@ type SlackClient interface {
 	// GetHistory はチャンネルの投稿履歴を取得する。
 	GetHistory(ctx context.Context, channel string, opts HistoryOptions) (*HistoryResult, error)
 
+	// AddReaction はメッセージにリアクション（絵文字）を追加する。
+	AddReaction(ctx context.Context, channel, timestamp, reaction string) (*ReactionResult, error)
+
+	// RemoveReaction はメッセージからリアクション（絵文字）を削除する。
+	RemoveReaction(ctx context.Context, channel, timestamp, reaction string) (*ReactionResult, error)
+
 	// ResolveChannel はチャンネル名をチャンネルIDに解決する。
 	ResolveChannel(ctx context.Context, channel string) (string, error)
 }
@@ -54,4 +60,12 @@ type HistoryMessage struct {
 	ThreadTS   string `json:"thread_ts,omitempty"`
 	ReplyCount int    `json:"reply_count"`
 	Permalink  string `json:"permalink"`
+}
+
+// ReactionResult はリアクション操作の結果。
+type ReactionResult struct {
+	Channel     string `json:"channel"`
+	ChannelName string `json:"channel_name"`
+	Timestamp   string `json:"timestamp"`
+	Reaction    string `json:"reaction"`
 }

@@ -181,6 +181,52 @@ func (c *Client) GetHistory(ctx context.Context, channel string, opts HistoryOpt
 	}, nil
 }
 
+// AddReaction はメッセージにリアクション（絵文字）を追加する。
+func (c *Client) AddReaction(ctx context.Context, channel, timestamp, reaction string) (*ReactionResult, error) {
+	channelID, err := c.resolveChannel(ctx, channel)
+	if err != nil {
+		return nil, err
+	}
+
+	itemRef := slackapi.NewRefToMessage(channelID, timestamp)
+	err = c.withRetry(ctx, func() error {
+		return c.api.AddReactionContext(ctx, reaction, itemRef)
+	})
+	if err != nil {
+		return nil, classifySlackError(err)
+	}
+
+	return &ReactionResult{
+		Channel:     channelID,
+		ChannelName: c.getChannelName(channel, channelID),
+		Timestamp:   timestamp,
+		Reaction:    reaction,
+	}, nil
+}
+
+// RemoveReaction はメッセージからリアクション（絵文字）を削除する。
+func (c *Client) RemoveReaction(ctx context.Context, channel, timestamp, reaction string) (*ReactionResult, error) {
+	channelID, err := c.resolveChannel(ctx, channel)
+	if err != nil {
+		return nil, err
+	}
+
+	itemRef := slackapi.NewRefToMessage(channelID, timestamp)
+	err = c.withRetry(ctx, func() error {
+		return c.api.RemoveReactionContext(ctx, reaction, itemRef)
+	})
+	if err != nil {
+		return nil, classifySlackError(err)
+	}
+
+	return &ReactionResult{
+		Channel:     channelID,
+		ChannelName: c.getChannelName(channel, channelID),
+		Timestamp:   timestamp,
+		Reaction:    reaction,
+	}, nil
+}
+
 // ResolveChannel はチャンネル名をチャンネルIDに解決する（公開メソッド）。
 func (c *Client) ResolveChannel(ctx context.Context, channel string) (string, error) {
 	return c.resolveChannel(ctx, channel)
@@ -247,6 +293,12 @@ func classifySlackErrorString(errStr string) error {
 		return apperr.New(apperr.CodeThreadNotFound, "スレッド元メッセージが見つかりません", fmt.Errorf("%s", errStr))
 	case strings.Contains(errStr, "no_text"):
 		return apperr.New(apperr.CodeNoText, "メッセージが空です", fmt.Errorf("%s", errStr))
+	case strings.Contains(errStr, "already_reacted"):
+		return apperr.New(apperr.CodeAlreadyReacted, "既にこの絵文字でリアクション済みです", fmt.Errorf("%s", errStr))
+	case strings.Contains(errStr, "no_reaction"):
+		return apperr.New(apperr.CodeNoReaction, "この絵文字のリアクションが存在しません", fmt.Errorf("%s", errStr))
+	case strings.Contains(errStr, "invalid_name"):
+		return apperr.New(apperr.CodeInvalidReaction, "絵文字名が無効です", fmt.Errorf("%s", errStr))
 	default:
 		return apperr.New(apperr.CodeNetworkError, "Slack APIへの接続に失敗しました", fmt.Errorf("%s", errStr))
 	}

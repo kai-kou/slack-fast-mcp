@@ -206,7 +206,143 @@ func postThreadHandler(client slackclient.SlackClient, cfg *config.Config) serve
 	}
 }
 
+// --- slack_add_reaction ---
+
+func addReactionTool() mcp.Tool {
+	return mcp.NewTool("slack_add_reaction",
+		mcp.WithDescription("Add a reaction (emoji) to a message in a Slack channel. "+
+			"Use emoji names without colons (e.g. 'thumbsup', not ':thumbsup:'). "+
+			"If channel is omitted, uses the configured default channel. "+
+			"The bot must be invited to the target channel first. "+
+			"Requires the 'reactions:write' OAuth scope."),
+		mcp.WithString("channel",
+			mcp.Description("Channel name (e.g. 'general') or channel ID (e.g. 'C01234ABCDE'). "+
+				"If omitted, uses the configured default channel."),
+		),
+		mcp.WithString("timestamp",
+			mcp.Required(),
+			mcp.Description("Timestamp of the message to react to (e.g. '1234567890.123456'). "+
+				"Get this from the 'ts' field of slack_get_history or slack_post_message results."),
+		),
+		mcp.WithString("reaction",
+			mcp.Required(),
+			mcp.Description("Emoji name to react with, without colons (e.g. 'thumbsup', 'heart', 'eyes', '+1'). "+
+				"See https://www.webfx.com/tools/emoji-cheat-sheet/ for available emoji names."),
+		),
+	)
+}
+
+func addReactionHandler(client slackclient.SlackClient, cfg *config.Config) server.ToolHandlerFunc {
+	return func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+		channelParam := request.GetString("channel", "")
+		timestamp := request.GetString("timestamp", "")
+		reaction := request.GetString("reaction", "")
+
+		if timestamp == "" {
+			appErr := apperr.New(apperr.CodeThreadNotFound, "timestamp が指定されていません", nil)
+			return mcp.NewToolResultError(appErr.FormatForMCP()), nil
+		}
+
+		if reaction == "" {
+			appErr := apperr.New(apperr.CodeInvalidReaction, "reaction（絵文字名）が指定されていません", nil)
+			return mcp.NewToolResultError(appErr.FormatForMCP()), nil
+		}
+
+		// コロン付きの絵文字名を正規化（:thumbsup: → thumbsup）
+		reaction = normalizeEmojiName(reaction)
+
+		channel, err := cfg.ResolveChannel(channelParam)
+		if err != nil {
+			return handleAppError(err)
+		}
+
+		result, err := client.AddReaction(ctx, channel, timestamp, reaction)
+		if err != nil {
+			return handleAppError(err)
+		}
+
+		return toolResultJSON(map[string]any{
+			"ok":           true,
+			"channel":      result.Channel,
+			"channel_name": result.ChannelName,
+			"timestamp":    result.Timestamp,
+			"reaction":     result.Reaction,
+		})
+	}
+}
+
+// --- slack_remove_reaction ---
+
+func removeReactionTool() mcp.Tool {
+	return mcp.NewTool("slack_remove_reaction",
+		mcp.WithDescription("Remove a reaction (emoji) from a message in a Slack channel. "+
+			"Use emoji names without colons (e.g. 'thumbsup', not ':thumbsup:'). "+
+			"Can only remove reactions that were added by the bot. "+
+			"If channel is omitted, uses the configured default channel. "+
+			"The bot must be invited to the target channel first. "+
+			"Requires the 'reactions:write' OAuth scope."),
+		mcp.WithString("channel",
+			mcp.Description("Channel name (e.g. 'general') or channel ID (e.g. 'C01234ABCDE'). "+
+				"If omitted, uses the configured default channel."),
+		),
+		mcp.WithString("timestamp",
+			mcp.Required(),
+			mcp.Description("Timestamp of the message to remove reaction from (e.g. '1234567890.123456'). "+
+				"Get this from the 'ts' field of slack_get_history or slack_post_message results."),
+		),
+		mcp.WithString("reaction",
+			mcp.Required(),
+			mcp.Description("Emoji name to remove, without colons (e.g. 'thumbsup', 'heart', 'eyes', '+1')."),
+		),
+	)
+}
+
+func removeReactionHandler(client slackclient.SlackClient, cfg *config.Config) server.ToolHandlerFunc {
+	return func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+		channelParam := request.GetString("channel", "")
+		timestamp := request.GetString("timestamp", "")
+		reaction := request.GetString("reaction", "")
+
+		if timestamp == "" {
+			appErr := apperr.New(apperr.CodeThreadNotFound, "timestamp が指定されていません", nil)
+			return mcp.NewToolResultError(appErr.FormatForMCP()), nil
+		}
+
+		if reaction == "" {
+			appErr := apperr.New(apperr.CodeInvalidReaction, "reaction（絵文字名）が指定されていません", nil)
+			return mcp.NewToolResultError(appErr.FormatForMCP()), nil
+		}
+
+		// コロン付きの絵文字名を正規化（:thumbsup: → thumbsup）
+		reaction = normalizeEmojiName(reaction)
+
+		channel, err := cfg.ResolveChannel(channelParam)
+		if err != nil {
+			return handleAppError(err)
+		}
+
+		result, err := client.RemoveReaction(ctx, channel, timestamp, reaction)
+		if err != nil {
+			return handleAppError(err)
+		}
+
+		return toolResultJSON(map[string]any{
+			"ok":           true,
+			"channel":      result.Channel,
+			"channel_name": result.ChannelName,
+			"timestamp":    result.Timestamp,
+			"reaction":     result.Reaction,
+		})
+	}
+}
+
 // --- ヘルパー ---
+
+// normalizeEmojiName はコロン付きの絵文字名からコロンを除去する。
+// 例: ":thumbsup:" → "thumbsup", "thumbsup" → "thumbsup"
+func normalizeEmojiName(name string) string {
+	return strings.Trim(name, ":")
+}
 
 // appendDisplayNameTag は display_name が指定されている場合、メッセージ末尾にハッシュタグを追加する。
 // 既にメッセージ末尾にハッシュタグ行がある場合は同じ行に追加し、ない場合は改行して追加する。

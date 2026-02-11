@@ -51,7 +51,7 @@ MCP servers start a new process **for every request**. Startup speed directly im
 
 ### Features
 
-- **3 MCP Tools** — `slack_post_message`, `slack_get_history`, `slack_post_thread`
+- **5 MCP Tools** — `slack_post_message`, `slack_get_history`, `slack_post_thread`, `slack_add_reaction`, `slack_remove_reaction`
 - **CLI Mode** — Use from the terminal: `post`, `history`, `reply`
 - **Setup Wizard** — Interactive `slack-fast-mcp setup` for easy configuration
 - **Per-project Config** — `.slack-mcp.json` for project-specific Slack settings
@@ -68,11 +68,12 @@ There are [many Slack MCP servers](https://mcp.so/tag/slack) available. slack-fa
 
 | | slack-fast-mcp | Feature-rich alternatives |
 |---|---|---|
-| **Design** | Minimalist — 3 focused tools | Full-featured — 8+ tools |
+| **Design** | Minimalist — 5 focused tools | Full-featured — 8+ tools |
 | **Auth** | Standard Bot Token (`xoxb`) | Bot / User / Browser tokens |
 | **Dependencies** | ~15 (binary ~10 MB) | 100+ (binary ~15 MB) |
 | **CLI mode** | Built-in terminal commands | MCP server only |
 | **Setup** | Interactive wizard + per-project config | Environment variables |
+| **Reactions** | Add/remove emoji reactions | Full reaction management |
 | **DMs / Search** | Not supported | Supported |
 
 ### Choose slack-fast-mcp if you value:
@@ -84,7 +85,7 @@ There are [many Slack MCP servers](https://mcp.so/tag/slack) available. slack-fa
 
 ### Consider alternatives if you need:
 
-Message search, DM/Group DM support, emoji reactions, browser-token authentication, or SSE/HTTP transports.
+Message search, DM/Group DM support, browser-token authentication, or SSE/HTTP transports.
 
 > **See also:** [korotovsky/slack-mcp-server](https://github.com/korotovsky/slack-mcp-server) (1k+ stars, Go, feature-rich) is a great option if you need advanced capabilities.
 
@@ -98,6 +99,7 @@ Here are some real-world scenarios where slack-fast-mcp shines:
 - **Pull request notifications** — Let AI post a summary to Slack when you finish a PR
 - **Thread-based collaboration** — Read and reply to Slack threads directly from Cursor or Claude Desktop
 - **CI/CD status reporting** — Pipe build results to a Slack channel via CLI
+- **Emoji reactions** — Let AI react to messages with emoji (e.g. :thumbsup: for acknowledgment, :eyes: for "looking into it")
 - **Team log / journal** — Auto-post session summaries to your personal `#times-*` channel
 
 ---
@@ -182,6 +184,7 @@ slack-fast-mcp version
    | `chat:write` | Post messages | **Yes** |
    | `channels:history` | Read public channel history | **Yes** |
    | `channels:read` | Resolve channel names | **Yes** |
+   | `reactions:write` | Add/remove emoji reactions | Recommended |
    | `users:read` | Display usernames in history | Recommended |
    | `groups:history` | Read private channel history | Optional |
    | `groups:read` | Resolve private channel names | Optional |
@@ -277,7 +280,7 @@ In Slack, open the target channel and type:
 
 ## MCP Tools
 
-Three tools are available when connected as an MCP server:
+Five tools are available when connected as an MCP server:
 
 ### `slack_post_message`
 
@@ -329,6 +332,38 @@ Reply to a message thread.
 slack_post_thread(channel: "general", thread_ts: "1234567890.123456", message: "Got it!")
 ```
 
+### `slack_add_reaction`
+
+Add an emoji reaction to a message.
+
+| Parameter | Type | Required | Description |
+|---|---|---|---|
+| `channel` | string | No | Channel name or ID. Defaults to config value |
+| `timestamp` | string | **Yes** | Timestamp of the message to react to |
+| `reaction` | string | **Yes** | Emoji name without colons (e.g. `thumbsup`, `heart`, `eyes`) |
+
+**Example:**
+
+```
+slack_add_reaction(channel: "general", timestamp: "1234567890.123456", reaction: "thumbsup")
+```
+
+### `slack_remove_reaction`
+
+Remove an emoji reaction from a message.
+
+| Parameter | Type | Required | Description |
+|---|---|---|---|
+| `channel` | string | No | Channel name or ID. Defaults to config value |
+| `timestamp` | string | **Yes** | Timestamp of the message to remove reaction from |
+| `reaction` | string | **Yes** | Emoji name without colons (e.g. `thumbsup`, `heart`, `eyes`) |
+
+**Example:**
+
+```
+slack_remove_reaction(channel: "general", timestamp: "1234567890.123456", reaction: "thumbsup")
+```
+
 ---
 
 ## CLI Usage
@@ -344,6 +379,12 @@ slack-fast-mcp history --channel general --limit 20
 
 # Reply to a thread
 slack-fast-mcp reply --channel general --thread-ts 1234567890.123456 --message "Reply here"
+
+# Add a reaction
+slack-fast-mcp react --channel general --timestamp 1234567890.123456 --reaction thumbsup
+
+# Remove a reaction
+slack-fast-mcp unreact --channel general --timestamp 1234567890.123456 --reaction thumbsup
 
 # JSON output (pipe to jq for pretty printing)
 slack-fast-mcp history --channel general --json | jq '.messages[].text'
@@ -437,6 +478,8 @@ Create a `.slack-mcp.json` in your project root to set defaults:
 | `invalid_auth` | Token is invalid or expired | Regenerate at [api.slack.com/apps](https://api.slack.com/apps) |
 | `channel_not_found` | Wrong channel name | Check spelling; don't include `#` prefix |
 | `missing_scope` | OAuth scope not added | Add scope in Slack App settings, then reinstall |
+| `already_reacted` | Already reacted with this emoji | Use a different emoji or remove the existing reaction first |
+| `no_reaction` | No reaction to remove | Check the emoji name — the bot can only remove its own reactions |
 | `token_not_configured` | No token set | Run `slack-fast-mcp setup` or set `SLACK_BOT_TOKEN` |
 
 For more details, see the [Slack App Setup Guide](./docs/slack-app-setup.md).
@@ -448,7 +491,7 @@ For more details, see the [Slack App Setup Guide](./docs/slack-app-setup.md).
 | Feature | Priority | Status |
 |---|---|---|
 | File upload support | Medium | Planned |
-| Emoji reactions | Low | Planned |
+| Emoji reactions | Low | **Done** |
 | User search / mention | Low | Planned |
 | Multi-workspace support | Low | Planned |
 | HTTP transport (remote MCP) | Low | Planned |

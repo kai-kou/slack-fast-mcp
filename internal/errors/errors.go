@@ -41,6 +41,9 @@ const (
 	CodeTokenNotConfigured = "token_not_configured"
 	CodeConfigParseError   = "config_parse_error"
 	CodeNetworkError       = "network_error"
+	CodeAlreadyReacted     = "already_reacted"
+	CodeNoReaction         = "no_reaction"
+	CodeInvalidReaction    = "invalid_reaction"
 )
 
 // エラーHintマップ（LLM向け・英語）
@@ -56,6 +59,9 @@ var hintMap = map[string]string{
 	CodeTokenNotConfigured: "No Slack token found. Ask the user to run 'slack-fast-mcp setup' or set the SLACK_BOT_TOKEN environment variable.",
 	CodeConfigParseError:   "Failed to parse config file. Ask the user to verify the JSON syntax in .slack-mcp.json",
 	CodeNetworkError:       "Failed to connect to Slack API. Check network connectivity and try again.",
+	CodeAlreadyReacted:     "The bot has already reacted with this emoji. Use a different emoji or remove the existing reaction first.",
+	CodeNoReaction:         "The bot has not reacted with this emoji, so it cannot be removed. Check the emoji name and try again.",
+	CodeInvalidReaction:    "The reaction emoji name is invalid. Use emoji names without colons (e.g. 'thumbsup', not ':thumbsup:').",
 }
 
 // New は指定されたコードでAppErrorを生成する。

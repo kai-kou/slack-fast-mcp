@@ -51,7 +51,7 @@ MCP サーバーはリクエストごとに**新しいプロセスを起動**し
 
 ### 特徴
 
-- **MCP ツール 3 種** — `slack_post_message`, `slack_get_history`, `slack_post_thread`
+- **MCP ツール 5 種** — `slack_post_message`, `slack_get_history`, `slack_post_thread`, `slack_add_reaction`, `slack_remove_reaction`
 - **CLI モード** — ターミナルから `post`, `history`, `reply` で直接操作
 - **セットアップウィザード** — `slack-fast-mcp setup` で対話形式の初期設定
 - **プロジェクト別設定** — `.slack-mcp.json` でプロジェクトごとの Slack 設定を管理
@@ -68,11 +68,12 @@ Slack MCP サーバーは[数多く存在します](https://mcp.so/tag/slack)。
 
 | | slack-fast-mcp | 多機能な代替ツール |
 |---|---|---|
-| **設計** | ミニマル — 3 ツールに特化 | フル機能 — 8 ツール以上 |
+| **設計** | ミニマル — 5 ツールに特化 | フル機能 — 8 ツール以上 |
 | **認証** | 標準 Bot Token（`xoxb`） | Bot / User / ブラウザトークン |
 | **依存関係** | 約 15（バイナリ約 10 MB） | 100 以上（バイナリ約 15 MB） |
 | **CLI モード** | ターミナルコマンド内蔵 | MCP サーバー専用 |
 | **セットアップ** | 対話式ウィザード + プロジェクト別設定 | 環境変数のみ |
+| **リアクション** | 絵文字リアクション追加/削除 | フルリアクション管理 |
 | **DM / 検索** | 非対応 | 対応 |
 
 ### slack-fast-mcp を選ぶべき場面：
@@ -84,7 +85,7 @@ Slack MCP サーバーは[数多く存在します](https://mcp.so/tag/slack)。
 
 ### 代替ツールが適している場面：
 
-メッセージ検索、DM / グループ DM、絵文字リアクション、ブラウザトークン認証、SSE / HTTP トランスポートが必要な場合。
+メッセージ検索、DM / グループ DM、ブラウザトークン認証、SSE / HTTP トランスポートが必要な場合。
 
 > **参考:** [korotovsky/slack-mcp-server](https://github.com/korotovsky/slack-mcp-server)（1k+ stars、Go 製、多機能）は、高度な機能が必要な場合の優れた選択肢です。
 
@@ -98,6 +99,7 @@ slack-fast-mcp が活躍する実際のユースケース：
 - **PR 通知** — PR 完了時に AI が Slack へサマリーを自動投稿
 - **スレッドベースのコラボレーション** — Cursor や Claude Desktop から直接 Slack スレッドを読み・返信
 - **CI/CD ステータス報告** — CLI でビルド結果を Slack チャンネルにパイプ
+- **絵文字リアクション** — AI がメッセージに絵文字でリアクション（:thumbsup: で承認、:eyes: で「確認中」など）
 - **チームログ / 分報** — セッション要約を個人の `#times-*` チャンネルへ自動投稿
 
 ---
@@ -182,6 +184,7 @@ slack-fast-mcp version
    | `chat:write` | メッセージ投稿 | **必須** |
    | `channels:history` | パブリックチャンネルの履歴取得 | **必須** |
    | `channels:read` | チャンネル名の解決 | **必須** |
+   | `reactions:write` | 絵文字リアクションの追加/削除 | 推奨 |
    | `users:read` | 履歴でユーザー名を表示 | 推奨 |
    | `groups:history` | プライベートチャンネルの履歴取得 | 任意 |
    | `groups:read` | プライベートチャンネル名の解決 | 任意 |
@@ -277,7 +280,7 @@ Slack で対象チャンネルを開き、以下を入力：
 
 ## MCP ツール
 
-MCP サーバーとして接続すると、3 つのツールが利用可能です：
+MCP サーバーとして接続すると、5 つのツールが利用可能です：
 
 ### `slack_post_message`
 
@@ -329,6 +332,38 @@ slack_get_history(channel: "general", limit: 5)
 slack_post_thread(channel: "general", thread_ts: "1234567890.123456", message: "了解！")
 ```
 
+### `slack_add_reaction`
+
+メッセージに絵文字リアクションを追加します。
+
+| パラメータ | 型 | 必須 | 説明 |
+|---|---|---|---|
+| `channel` | string | No | チャンネル名 or ID。設定ファイルのデフォルト値を使用 |
+| `timestamp` | string | **Yes** | リアクション対象メッセージのタイムスタンプ |
+| `reaction` | string | **Yes** | コロンなしの絵文字名（例: `thumbsup`, `heart`, `eyes`） |
+
+**使用例：**
+
+```
+slack_add_reaction(channel: "general", timestamp: "1234567890.123456", reaction: "thumbsup")
+```
+
+### `slack_remove_reaction`
+
+メッセージから絵文字リアクションを削除します。
+
+| パラメータ | 型 | 必須 | 説明 |
+|---|---|---|---|
+| `channel` | string | No | チャンネル名 or ID。設定ファイルのデフォルト値を使用 |
+| `timestamp` | string | **Yes** | リアクション削除対象メッセージのタイムスタンプ |
+| `reaction` | string | **Yes** | コロンなしの絵文字名（例: `thumbsup`, `heart`, `eyes`） |
+
+**使用例：**
+
+```
+slack_remove_reaction(channel: "general", timestamp: "1234567890.123456", reaction: "thumbsup")
+```
+
 ---
 
 ## CLI の使い方
@@ -344,6 +379,12 @@ slack-fast-mcp history --channel general --limit 20
 
 # スレッド返信
 slack-fast-mcp reply --channel general --thread-ts 1234567890.123456 --message "返信します"
+
+# リアクション追加
+slack-fast-mcp react --channel general --timestamp 1234567890.123456 --reaction thumbsup
+
+# リアクション削除
+slack-fast-mcp unreact --channel general --timestamp 1234567890.123456 --reaction thumbsup
 
 # JSON 形式で出力（jq と連携して整形）
 slack-fast-mcp history --channel general --json | jq '.messages[].text'
@@ -437,6 +478,8 @@ slack-fast-mcp setup
 | `invalid_auth` | トークンが無効または期限切れ | [api.slack.com/apps](https://api.slack.com/apps) で再生成 |
 | `channel_not_found` | チャンネル名が間違っている | スペルを確認、`#` プレフィックスは不要 |
 | `missing_scope` | OAuth スコープが未追加 | Slack App 設定でスコープを追加し、アプリを再インストール |
+| `already_reacted` | この絵文字で既にリアクション済み | 別の絵文字を使用するか、既存のリアクションを先に削除 |
+| `no_reaction` | 削除するリアクションが存在しない | 絵文字名を確認（Bot 自身のリアクションのみ削除可能） |
 | `token_not_configured` | トークンが未設定 | `slack-fast-mcp setup` を実行、または `SLACK_BOT_TOKEN` を設定 |
 
 詳しくは [Slack App セットアップガイド](./docs/slack-app-setup.md) を参照してください。
@@ -448,7 +491,7 @@ slack-fast-mcp setup
 | 機能 | 優先度 | ステータス |
 |---|---|---|
 | ファイルアップロード | 中 | 計画中 |
-| 絵文字リアクション | 低 | 計画中 |
+| 絵文字リアクション | 低 | **実装済み** |
 | ユーザー検索・メンション | 低 | 計画中 |
 | マルチワークスペース対応 | 低 | 計画中 |
 | HTTP transport（リモート MCP） | 低 | 計画中 |

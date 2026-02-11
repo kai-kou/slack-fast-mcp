@@ -475,6 +475,283 @@ func TestPostMessageHandler_DisplayNameParamOverridesConfig(t *testing.T) {
 	}
 }
 
+// --- M17: slack_add_reaction 正常系 ---
+func TestAddReactionHandler_Success(t *testing.T) {
+	mock := &slackclient.MockClient{
+		AddReactionFunc: func(ctx context.Context, channel, timestamp, reaction string) (*slackclient.ReactionResult, error) {
+			return &slackclient.ReactionResult{
+				Channel:     "C01234ABCDE",
+				ChannelName: "general",
+				Timestamp:   timestamp,
+				Reaction:    reaction,
+			}, nil
+		},
+	}
+
+	cfg := &config.Config{DefaultChannel: "general"}
+	handler := addReactionHandler(mock, cfg)
+
+	req := newTestCallToolRequest("slack_add_reaction", map[string]any{
+		"timestamp": "1234567890.123456",
+		"reaction":  "thumbsup",
+	})
+
+	result, err := handler(context.Background(), req)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	text := extractText(t, result)
+	if !strings.Contains(text, `"ok":true`) {
+		t.Errorf("result = %q, want to contain ok:true", text)
+	}
+	if !strings.Contains(text, `"reaction":"thumbsup"`) {
+		t.Errorf("result = %q, want to contain reaction:thumbsup", text)
+	}
+	if !strings.Contains(text, `"timestamp":"1234567890.123456"`) {
+		t.Errorf("result = %q, want to contain timestamp", text)
+	}
+}
+
+// --- M18: slack_add_reaction コロン付き絵文字名の正規化 ---
+func TestAddReactionHandler_NormalizeColons(t *testing.T) {
+	var capturedReaction string
+	mock := &slackclient.MockClient{
+		AddReactionFunc: func(ctx context.Context, channel, timestamp, reaction string) (*slackclient.ReactionResult, error) {
+			capturedReaction = reaction
+			return &slackclient.ReactionResult{
+				Channel:   "C01234ABCDE",
+				Timestamp: timestamp,
+				Reaction:  reaction,
+			}, nil
+		},
+	}
+
+	cfg := &config.Config{DefaultChannel: "general"}
+	handler := addReactionHandler(mock, cfg)
+
+	req := newTestCallToolRequest("slack_add_reaction", map[string]any{
+		"timestamp": "1234567890.123456",
+		"reaction":  ":thumbsup:",
+	})
+
+	_, err := handler(context.Background(), req)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if capturedReaction != "thumbsup" {
+		t.Errorf("capturedReaction = %q, want %q", capturedReaction, "thumbsup")
+	}
+}
+
+// --- M19: slack_add_reaction timestamp 未指定 ---
+func TestAddReactionHandler_NoTimestamp(t *testing.T) {
+	mock := &slackclient.MockClient{}
+	cfg := &config.Config{DefaultChannel: "general"}
+	handler := addReactionHandler(mock, cfg)
+
+	req := newTestCallToolRequest("slack_add_reaction", map[string]any{
+		"timestamp": "",
+		"reaction":  "thumbsup",
+	})
+
+	result, err := handler(context.Background(), req)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	text := extractText(t, result)
+	if !strings.Contains(text, "thread_not_found") {
+		t.Errorf("result = %q, want to contain thread_not_found error", text)
+	}
+}
+
+// --- M20: slack_add_reaction reaction 未指定 ---
+func TestAddReactionHandler_NoReaction(t *testing.T) {
+	mock := &slackclient.MockClient{}
+	cfg := &config.Config{DefaultChannel: "general"}
+	handler := addReactionHandler(mock, cfg)
+
+	req := newTestCallToolRequest("slack_add_reaction", map[string]any{
+		"timestamp": "1234567890.123456",
+		"reaction":  "",
+	})
+
+	result, err := handler(context.Background(), req)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	text := extractText(t, result)
+	if !strings.Contains(text, "invalid_reaction") {
+		t.Errorf("result = %q, want to contain invalid_reaction error", text)
+	}
+}
+
+// --- M21: slack_add_reaction already_reacted エラー ---
+func TestAddReactionHandler_AlreadyReacted(t *testing.T) {
+	mock := &slackclient.MockClient{
+		AddReactionFunc: func(ctx context.Context, channel, timestamp, reaction string) (*slackclient.ReactionResult, error) {
+			return nil, apperr.New(apperr.CodeAlreadyReacted, "既にこの絵文字でリアクション済みです", nil)
+		},
+	}
+
+	cfg := &config.Config{DefaultChannel: "general"}
+	handler := addReactionHandler(mock, cfg)
+
+	req := newTestCallToolRequest("slack_add_reaction", map[string]any{
+		"timestamp": "1234567890.123456",
+		"reaction":  "thumbsup",
+	})
+
+	result, err := handler(context.Background(), req)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	text := extractText(t, result)
+	if !strings.Contains(text, "already_reacted") {
+		t.Errorf("result = %q, want to contain already_reacted", text)
+	}
+}
+
+// --- M22: slack_remove_reaction 正常系 ---
+func TestRemoveReactionHandler_Success(t *testing.T) {
+	mock := &slackclient.MockClient{
+		RemoveReactionFunc: func(ctx context.Context, channel, timestamp, reaction string) (*slackclient.ReactionResult, error) {
+			return &slackclient.ReactionResult{
+				Channel:     "C01234ABCDE",
+				ChannelName: "general",
+				Timestamp:   timestamp,
+				Reaction:    reaction,
+			}, nil
+		},
+	}
+
+	cfg := &config.Config{DefaultChannel: "general"}
+	handler := removeReactionHandler(mock, cfg)
+
+	req := newTestCallToolRequest("slack_remove_reaction", map[string]any{
+		"timestamp": "1234567890.123456",
+		"reaction":  "thumbsup",
+	})
+
+	result, err := handler(context.Background(), req)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	text := extractText(t, result)
+	if !strings.Contains(text, `"ok":true`) {
+		t.Errorf("result = %q, want to contain ok:true", text)
+	}
+	if !strings.Contains(text, `"reaction":"thumbsup"`) {
+		t.Errorf("result = %q, want to contain reaction:thumbsup", text)
+	}
+}
+
+// --- M23: slack_remove_reaction no_reaction エラー ---
+func TestRemoveReactionHandler_NoReaction(t *testing.T) {
+	mock := &slackclient.MockClient{
+		RemoveReactionFunc: func(ctx context.Context, channel, timestamp, reaction string) (*slackclient.ReactionResult, error) {
+			return nil, apperr.New(apperr.CodeNoReaction, "この絵文字のリアクションが存在しません", nil)
+		},
+	}
+
+	cfg := &config.Config{DefaultChannel: "general"}
+	handler := removeReactionHandler(mock, cfg)
+
+	req := newTestCallToolRequest("slack_remove_reaction", map[string]any{
+		"timestamp": "1234567890.123456",
+		"reaction":  "thumbsup",
+	})
+
+	result, err := handler(context.Background(), req)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	text := extractText(t, result)
+	if !strings.Contains(text, "no_reaction") {
+		t.Errorf("result = %q, want to contain no_reaction", text)
+	}
+}
+
+// --- M24: slack_remove_reaction timestamp 未指定 ---
+func TestRemoveReactionHandler_NoTimestamp(t *testing.T) {
+	mock := &slackclient.MockClient{}
+	cfg := &config.Config{DefaultChannel: "general"}
+	handler := removeReactionHandler(mock, cfg)
+
+	req := newTestCallToolRequest("slack_remove_reaction", map[string]any{
+		"timestamp": "",
+		"reaction":  "thumbsup",
+	})
+
+	result, err := handler(context.Background(), req)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	text := extractText(t, result)
+	if !strings.Contains(text, "thread_not_found") {
+		t.Errorf("result = %q, want to contain thread_not_found error", text)
+	}
+}
+
+// --- M25: normalizeEmojiName テスト ---
+func TestNormalizeEmojiName(t *testing.T) {
+	tests := []struct {
+		name  string
+		input string
+		want  string
+	}{
+		{"no colons", "thumbsup", "thumbsup"},
+		{"with colons", ":thumbsup:", "thumbsup"},
+		{"leading colon only", ":thumbsup", "thumbsup"},
+		{"trailing colon only", "thumbsup:", "thumbsup"},
+		{"plus one", "+1", "+1"},
+		{"with colons plus one", ":+1:", "+1"},
+		{"empty string", "", ""},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := normalizeEmojiName(tt.input)
+			if got != tt.want {
+				t.Errorf("normalizeEmojiName(%q) = %q, want %q", tt.input, got, tt.want)
+			}
+		})
+	}
+}
+
+// --- M26: slack_add_reaction チャンネル指定 ---
+func TestAddReactionHandler_WithChannel(t *testing.T) {
+	var capturedChannel string
+	mock := &slackclient.MockClient{
+		AddReactionFunc: func(ctx context.Context, channel, timestamp, reaction string) (*slackclient.ReactionResult, error) {
+			capturedChannel = channel
+			return &slackclient.ReactionResult{
+				Channel:   "C09876ZZZZZ",
+				Timestamp: timestamp,
+				Reaction:  reaction,
+			}, nil
+		},
+	}
+
+	cfg := &config.Config{DefaultChannel: "default-ch"}
+	handler := addReactionHandler(mock, cfg)
+
+	req := newTestCallToolRequest("slack_add_reaction", map[string]any{
+		"channel":   "specific-channel",
+		"timestamp": "1234567890.123456",
+		"reaction":  "thumbsup",
+	})
+
+	_, err := handler(context.Background(), req)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if capturedChannel != "specific-channel" {
+		t.Errorf("capturedChannel = %q, want %q", capturedChannel, "specific-channel")
+	}
+}
+
 // --- ヘルパー ---
 
 func extractText(t *testing.T, result *mcp.CallToolResult) string {

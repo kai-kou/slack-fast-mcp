@@ -1,7 +1,7 @@
 ---
 tasks:
-  total: 43
-  completed: 43
+  total: 48
+  completed: 48
   in_progress: 0
   blocked: 0
   overall_progress: 100
@@ -10,7 +10,7 @@ tasks:
 # タスク管理
 
 **プロジェクト**: slack-fast-mcp
-**最終更新**: 2026-02-11（SPRINT-003完了: Design Philosophy/設計思想セクション追加）
+**最終更新**: 2026-02-11（SPRINT-004完了: リアクション追加・削除機能実装）
 
 ---
 
@@ -34,7 +34,7 @@ tasks:
 
 ## 進捗サマリー
 
-**全体**: 43/43 タスク完了 (100%) 🎉
+**全体**: 48/48 タスク完了 (100%) 🎉
 
 ### フェーズ別進捗
 - Phase 1: 7/7 完了 (100%) ✅
@@ -42,10 +42,11 @@ tasks:
 - Phase 3: 11/11 完了 (100%) ✅
 - Phase 4: 9/9 完了 (100%) ✅
 - Post-Release: 5/5 完了 (100%) ✅
+- Feature: Reactions: 5/5 完了 (100%) ✅
 
 ### 優先度別
-- P0: 12/12 完了
-- P1: 25/25 完了
+- P0: 14/14 完了
+- P1: 28/28 完了
 - P2: 8/8 完了
 - P3: 0/0 完了
 
@@ -139,9 +140,23 @@ tasks:
 
 ---
 
+## Feature: Emoji Reactions ✅
+
+### 期間: 2026-02-11
+
+| ID | タスク | 優先度 | ステータス | 期限 | 備考 |
+|----|--------|--------|-----------|------|------|
+| T501 | Slack Client - AddReaction/RemoveReaction メソッド実装 | P0 | ✅ 完了 | 02-11 | types.go, client.go, mock_client.go, errors.go。02-11完了 |
+| T502 | MCP Tools - slack_add_reaction / slack_remove_reaction ツール実装 | P0 | ✅ 完了 | 02-11 | tools.go, server.go。02-11完了 |
+| T503 | CLI - react / unreact サブコマンド実装 | P1 | ✅ 完了 | 02-11 | react.go, unreact.go, root.go。02-11完了 |
+| T504 | テスト実装（全レイヤー） | P1 | ✅ 完了 | 02-11 | tools_test.go（10テスト追加）。02-11完了 |
+| T505 | ドキュメント更新（README/requirements/slack-app-setup） | P1 | ✅ 完了 | 02-11 | README×2, slack-app-setup, Roadmap更新。02-11完了 |
+
+---
+
 ## 今週の重点タスク
 
-> SPRINT-003: README（EN/JA）にDesign Philosophyセクションを追加し、ツールの立ち位置を明確化する
+> SPRINT-004: リアクション追加・削除機能を全レイヤー（Slack Client → MCP Tool → CLI → テスト → ドキュメント）で実装
 
 ---
 

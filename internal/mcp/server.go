@@ -28,6 +28,8 @@ func NewServerWithClient(cfg *config.Config, client slackclient.SlackClient) *se
 	s.AddTool(postMessageTool(), postMessageHandler(client, cfg))
 	s.AddTool(getHistoryTool(), getHistoryHandler(client, cfg))
 	s.AddTool(postThreadTool(), postThreadHandler(client, cfg))
+	s.AddTool(addReactionTool(), addReactionHandler(client, cfg))
+	s.AddTool(removeReactionTool(), removeReactionHandler(client, cfg))
 
 	return s
 }

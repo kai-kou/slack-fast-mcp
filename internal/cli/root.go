@@ -1,5 +1,5 @@
 // Package cli implements the CLI layer using cobra for slack-fast-mcp.
-// Provides subcommands: serve, post, history, reply, setup, version.
+// Provides subcommands: serve, post, history, reply, react, unreact, setup, version.
 package cli
 
 import (
@@ -61,6 +61,8 @@ Without any subcommand, starts the MCP Server in stdio mode.`,
 	rootCmd.AddCommand(newPostCmd())
 	rootCmd.AddCommand(newHistoryCmd())
 	rootCmd.AddCommand(newReplyCmd())
+	rootCmd.AddCommand(newReactCmd())
+	rootCmd.AddCommand(newUnreactCmd())
 	rootCmd.AddCommand(newVersionCmd())
 	rootCmd.AddCommand(newSetupCmd())
 
