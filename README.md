@@ -21,6 +21,7 @@ Post messages, read history, and reply to threads from AI editors like [Cursor](
 ## Table of Contents
 
 - [Why slack-fast-mcp?](#why-slack-fast-mcp)
+- [Design Philosophy](#design-philosophy)
 - [What Can You Do?](#what-can-you-do)
 - [Quick Start](#quick-start)
 - [MCP Tools](#mcp-tools)
@@ -56,6 +57,36 @@ MCP servers start a new process **for every request**. Startup speed directly im
 - **Per-project Config** — `.slack-mcp.json` for project-specific Slack settings
 - **Cross-platform** — macOS, Linux, Windows binaries available
 - **Secure** — Environment variable references for tokens, hardcoded-token warnings
+
+---
+
+## Design Philosophy
+
+> **Do a few things exceptionally well, rather than everything adequately.**
+
+There are [many Slack MCP servers](https://mcp.so/tag/slack) available. slack-fast-mcp takes a deliberately minimalist approach:
+
+| | slack-fast-mcp | Feature-rich alternatives |
+|---|---|---|
+| **Design** | Minimalist — 3 focused tools | Full-featured — 8+ tools |
+| **Auth** | Standard Bot Token (`xoxb`) | Bot / User / Browser tokens |
+| **Dependencies** | ~15 (binary ~10 MB) | 100+ (binary ~15 MB) |
+| **CLI mode** | Built-in terminal commands | MCP server only |
+| **Setup** | Interactive wizard + per-project config | Environment variables |
+| **DMs / Search** | Not supported | Supported |
+
+### Choose slack-fast-mcp if you value:
+
+- **Speed** — Sub-10ms cold starts on every request
+- **Simplicity** — One binary, zero runtime dependencies, 3-minute setup
+- **Developer experience** — CLI mode, setup wizard, project-scoped config
+- **Clean auth** — Standard Slack Bot Token, no workarounds needed
+
+### Consider alternatives if you need:
+
+Message search, DM/Group DM support, emoji reactions, browser-token authentication, or SSE/HTTP transports.
+
+> **See also:** [korotovsky/slack-mcp-server](https://github.com/korotovsky/slack-mcp-server) (1k+ stars, Go, feature-rich) is a great option if you need advanced capabilities.
 
 ---
 

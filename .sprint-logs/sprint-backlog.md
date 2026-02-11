@@ -1,20 +1,20 @@
 ---
 sprint:
-  id: "SPRINT-002"
+  id: "SPRINT-003"
   project: "slack-fast-mcp"
   date: "2026-02-11"
   status: "completed"
 backlog:
   total_tasks: 2
-  total_sp: 3
+  total_sp: 5
   completed_tasks: 2
-  completed_sp: 3
+  completed_sp: 5
   sp_completion_rate: 100
 ---
 
 # スプリントバックログ
 
-**スプリント**: SPRINT-002
+**スプリント**: SPRINT-003
 **プロジェクト**: slack-fast-mcp
 **日付**: 2026-02-11
 **ステータス**: completed
@@ -23,7 +23,7 @@ backlog:
 
 ## スプリント目標
 
-> READMEのファーストビューにツール概要インフォグラフィック画像を追加し、リポジトリの第一印象を向上させる
+> 本ツールの設計思想と市場での立ち位置を README（EN/JA）に明記し、初見ユーザーが「他のSlack MCPサーバーとの違い」を即座に理解できるようにする
 
 ---
 
@@ -31,31 +31,31 @@ backlog:
 
 | # | タスクID | タスク名 | SP | 優先度 | 担当 | ステータス | 備考 |
 |---|---------|---------|-----|--------|------|-----------|------|
-| 1 | T402 | ツール概要インフォグラフィック画像の生成 | 2 | P1 | infographic-generator | ✅ | GenerateImageで生成完了。docs/assets/hero-image.png |
-| 2 | T403 | README.md / README_ja.md へのファーストビュー画像埋め込み | 1 | P1 | sprint-coder | ✅ | 両ファイルのTODOコメントをcenter-aligned画像タグに置換 |
+| 1 | T404 | README.md に「Design Philosophy」ポジショニングセクション追加 | 3 | P1 | sprint-documenter | ✅ | ToC更新含む。競合比較テーブル+選択ガイド |
+| 2 | T405 | README_ja.md に同等のポジショニングセクション追加 | 2 | P1 | sprint-documenter | ✅ | T404の日本語版。ToC更新含む |
 
 ### SP集計
 
 | 項目 | 値 |
 |------|-----|
-| 計画SP合計 | 3 |
-| 完了SP合計 | 3 |
+| 計画SP合計 | 5 |
+| 完了SP合計 | 5 |
 | SP消化率 | 100% |
 | タスク数 | 2 / 2 |
 
 ### 粒度チェック
 
-- [x] SP合計 ≤ 21（推奨: 5〜13） → 3 SP
+- [x] SP合計 ≤ 21（推奨: 5〜13） → 5 SP
 - [x] タスク数 ≤ 10（推奨: 3〜7） → 2件
-- [x] 推定所要時間 ≤ 4時間（推奨: 15分〜2時間） → 〜20分
+- [x] 推定所要時間 ≤ 4時間（推奨: 15分〜2時間） → ~20分
 
 ---
 
 ## 入力元
 
 - **milestones.md**: Post-Release改善フェーズ（全マイルストーン完了済み）
-- **tasks.md**: T402-T403（新規追加）
-- **前回Try**: TRY-016（READMEにデモGIF追加 → インフォグラフィックとして部分対応）
+- **tasks.md**: T404-T405（新規追加）
+- **前回Try**: TRY-016/TRY-017 は見送り（スコープ外）
 
 ---
 
@@ -65,7 +65,6 @@ backlog:
 
 | 時刻 | 変更内容 | 変更前SP | 変更後SP | 理由 |
 |------|---------|---------|---------|------|
-| 02-11 | 英語/日本語で別画像を用意（日本語版インフォグラフィック追加） | 3 | 4 | PO指示: ローカライズ対応 |
 
 ---
 
