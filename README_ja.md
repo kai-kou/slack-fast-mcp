@@ -481,6 +481,49 @@ slack-fast-mcp setup
 | `already_reacted` | この絵文字で既にリアクション済み | 別の絵文字を使用するか、既存のリアクションを先に削除 |
 | `no_reaction` | 削除するリアクションが存在しない | 絵文字名を確認（Bot 自身のリアクションのみ削除可能） |
 | `token_not_configured` | トークンが未設定 | `slack-fast-mcp setup` を実行、または `SLACK_BOT_TOKEN` を設定 |
+| MCP 接続タイムアウト / `No server info found` | バイナリが起動時にハングしている | 下記「[バイナリが起動しない場合](#バイナリが起動しない場合)」を参照 |
+
+### バイナリが起動しない場合
+
+**症状:** Cursor 等の MCP クライアントで接続エラーが発生し、ログに以下のようなメッセージが繰り返される：
+
+```
+[info] Starting new stdio process with command: .../slack-fast-mcp
+[info] Server creation in progress for getInstructions, waiting
+[error] No server info found
+```
+
+**原因:** macOS の動的リンカー（dyld）レベルでバイナリがハングし、Go ランタイムに到達できないケースがあります。以下の状況で発生する可能性があります：
+
+- Go ツールチェーンをアップデートした後、古いバイナリをそのまま使用している
+- GoReleaser やクロスコンパイルで生成されたバイナリと、実行環境の macOS バージョンが不整合
+- macOS のメジャーアップデート後
+
+**診断方法:**
+
+```bash
+# バイナリが正常に応答するか確認
+slack-fast-mcp version
+
+# version コマンドが数秒以内に応答しない場合、バイナリに問題があります
+```
+
+**対処法:**
+
+```bash
+# ソースからバイナリを再ビルド
+cd /path/to/slack-fast-mcp
+make build
+# ビルド成果物は ./build/slack-fast-mcp に生成されます
+
+# または go build で直接再ビルド
+go build -o slack-fast-mcp ./cmd/slack-fast-mcp/
+
+# 再ビルド後、MCP 設定のパスにバイナリを配置
+sudo cp ./build/slack-fast-mcp /usr/local/bin/
+```
+
+再ビルド後、Cursor の MCP サーバー設定でリロードしてください。
 
 詳しくは [Slack App セットアップガイド](./docs/slack-app-setup.md) を参照してください。
 

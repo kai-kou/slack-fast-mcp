@@ -481,6 +481,49 @@ Create a `.slack-mcp.json` in your project root to set defaults:
 | `already_reacted` | Already reacted with this emoji | Use a different emoji or remove the existing reaction first |
 | `no_reaction` | No reaction to remove | Check the emoji name — the bot can only remove its own reactions |
 | `token_not_configured` | No token set | Run `slack-fast-mcp setup` or set `SLACK_BOT_TOKEN` |
+| MCP connection timeout / `No server info found` | Binary hangs on startup | See "[Binary fails to start](#binary-fails-to-start)" below |
+
+### Binary fails to start
+
+**Symptoms:** MCP client (Cursor, etc.) shows a connection error, and logs contain repeated messages like:
+
+```
+[info] Starting new stdio process with command: .../slack-fast-mcp
+[info] Server creation in progress for getInstructions, waiting
+[error] No server info found
+```
+
+**Cause:** On macOS, the binary may hang at the dynamic linker (`dyld`) level and never reach the Go runtime. This can happen when:
+
+- Using a stale binary after updating the Go toolchain
+- Using a cross-compiled or GoReleaser-built binary that is incompatible with the current macOS version
+- After a major macOS update
+
+**Diagnosis:**
+
+```bash
+# Check if the binary responds normally
+slack-fast-mcp version
+
+# If the version command does not respond within a few seconds, the binary is broken
+```
+
+**Fix:**
+
+```bash
+# Rebuild the binary from source
+cd /path/to/slack-fast-mcp
+make build
+# The binary will be generated at ./build/slack-fast-mcp
+
+# Or rebuild directly with go build
+go build -o slack-fast-mcp ./cmd/slack-fast-mcp/
+
+# Copy the rebuilt binary to the path configured in your MCP settings
+sudo cp ./build/slack-fast-mcp /usr/local/bin/
+```
+
+After rebuilding, reload the MCP server in your editor's settings.
 
 For more details, see the [Slack App Setup Guide](./docs/slack-app-setup.md).
 
