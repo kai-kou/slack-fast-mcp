@@ -161,6 +161,14 @@ smoke: build ## スモークテスト（バイナリの起動・基本動作確�
 	@echo "==> Running smoke test..."
 	@./scripts/smoke-test.sh $(BUILD_DIR)/$(BINARY_NAME)
 
+## ===== ベンチマーク =====
+
+bench: build ## 起動時間ベンチマーク（~10ms の根拠を検証）
+	@./scripts/benchmark.sh 50 $(BUILD_DIR)/$(BINARY_NAME)
+
+bench-full: build ## 起動時間ベンチマーク（100回・詳細）
+	@./scripts/benchmark.sh 100 $(BUILD_DIR)/$(BINARY_NAME)
+
 ## ===== リリース =====
 
 lint: ## golangci-lint 実行

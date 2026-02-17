@@ -48,6 +48,7 @@ MCP サーバーはリクエストごとに**新しいプロセスを起動**し
 | **バイナリサイズ** | ~10 MB | N/A | N/A |
 
 > ベンチマーク: Apple M1（macOS）での起動時間計測。実測値はハードウェアにより異なります。
+> 再現手順: `make bench`（[scripts/benchmark.sh](scripts/benchmark.sh)）
 
 ### 特徴
 

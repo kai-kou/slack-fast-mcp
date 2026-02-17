@@ -48,6 +48,7 @@ MCP servers start a new process **for every request**. Startup speed directly im
 | **Binary size** | ~10 MB | N/A | N/A |
 
 > Benchmark: startup time measured on Apple M1 (macOS). Actual values vary by hardware.
+> Reproduce: `make bench` ([scripts/benchmark.sh](scripts/benchmark.sh))
 
 ### Features
 
