@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "slack-fast-mcp": {
+      "command": "./build/slack-fast-mcp",
+      "args": [],
+      "env": {
+        "SLACK_BOT_TOKEN": "${SLACK_BOT_TOKEN}"
+      }
+    }
+  }
+}
