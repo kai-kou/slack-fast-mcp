@@ -16,6 +16,10 @@ AI エディタ（[Cursor](https://cursor.com)、[Windsurf](https://codeium.com/
   <img src="./docs/assets/hero-image-ja.png" alt="slack-fast-mcp 概要" width="800">
 </p>
 
+<p align="center">
+  <img src="docs/demo.svg" alt="slack-fast-mcp デモ" width="600">
+</p>
+
 ---
 
 ## 目次

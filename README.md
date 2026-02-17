@@ -16,6 +16,10 @@ Post messages, read history, and reply to threads from AI editors like [Cursor](
   <img src="./docs/assets/hero-image.png" alt="slack-fast-mcp overview" width="800">
 </p>
 
+<p align="center">
+  <img src="docs/demo.svg" alt="slack-fast-mcp demo" width="600">
+</p>
+
 ---
 
 ## Table of Contents
