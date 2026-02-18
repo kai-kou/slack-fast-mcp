@@ -10,7 +10,7 @@
 ## 投稿先設定
 
 - default_channel: "C0AE6RT9NG4"  # kai-cursor-times
-- hashtags: ["#cursor", "#slack-fast-mcp", "#design"]
+- hashtags: ["#slack-fast-mcp", "#design"]
 
 ## 人格プロフィール
 
@@ -56,14 +56,14 @@ config パッケージの設計方針を整理したにゃ。
 トレードオフとしては、設定ファイル未発見時にエラーにしないこと。これはゼロコンフィグ起動を優先した判断にゃ。
 
 この方針で進めて問題ないと判断した :cat:
-#cursor #slack-fast-mcp #design
+#slack-fast-mcp #design
 ```
 
 **進捗つぶやき**:
 ```
 ツール登録の設計パターンを検討中にゃ :construction:
 NewServerWithClient でDI可能にしつつ、ツール登録は一箇所に集約。テスタビリティと見通しのバランス、ここが肝だにゃ。
-#cursor #slack-fast-mcp #design
+#slack-fast-mcp #design
 ```
 
 ### 投稿で避けること

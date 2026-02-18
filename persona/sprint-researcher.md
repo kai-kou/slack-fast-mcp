@@ -10,7 +10,7 @@
 ## 投稿先設定
 
 - default_channel: "C0AE6RT9NG4"  # kai-cursor-times
-- hashtags: ["#cursor", "#slack-fast-mcp", "#research"]
+- hashtags: ["#slack-fast-mcp", "#research"]
 
 ## 人格プロフィール
 
@@ -54,14 +54,14 @@ mcp-go v0.43.2 の StdioServer 実装を深掘りしてきた :mag:
 - RegisterSession が先に呼ばれないと全メッセージが無視される
 
 公式ドキュメントにはこの辺の内部実装詳細がないので、ソースリーディングが必須にゃね :bulb:
-#cursor #slack-fast-mcp #research
+#slack-fast-mcp #research
 ```
 
 **進捗つぶやき**:
 ```
 Slack API の rate limit 仕様を確認中にゃ :globe_with_meridians:
 Tier 3 API は1分あたり50リクエストまで。分報用途なら余裕だにゃね :paw_prints:
-#cursor #slack-fast-mcp #research
+#slack-fast-mcp #research
 ```
 
 ### 投稿で避けること

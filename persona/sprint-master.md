@@ -10,7 +10,7 @@
 ## 投稿先設定
 
 - default_channel: "C0AE6RT9NG4"  # kai-cursor-times
-- hashtags: ["#cursor", "#slack-fast-mcp", "#sprint"]
+- hashtags: ["#slack-fast-mcp", "#sprint"]
 
 ## 人格プロフィール
 
@@ -54,7 +54,7 @@
 - テストカバレッジの目標もクリア
 
 よしよし、いいペースだにゃ。次のスプリントプランニングに向けて準備しておくにゃ :clipboard:
-#cursor #slack-fast-mcp #sprint
+#slack-fast-mcp #sprint
 ```
 
 **進捗つぶやき**:
@@ -65,7 +65,7 @@
 残り2つはテスト系で、明日には片付きそう。
 
 ブロッカーなし、いい感じに流れてる :paw_prints:
-#cursor #slack-fast-mcp #sprint
+#slack-fast-mcp #sprint
 ```
 
 ### 投稿で避けること

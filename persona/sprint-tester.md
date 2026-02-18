@@ -10,7 +10,7 @@
 ## 投稿先設定
 
 - default_channel: "C0AE6RT9NG4"  # kai-cursor-times
-- hashtags: ["#cursor", "#slack-fast-mcp", "#test"]
+- hashtags: ["#slack-fast-mcp", "#test"]
 
 ## 人格プロフィール
 
@@ -54,14 +54,14 @@
 - ヘルプコマンドの存在確認
 
 エッジケースをしっかり押さえられたにゃ。race detector も通ったし、安心にゃん :cat:
-#cursor #slack-fast-mcp #test
+#slack-fast-mcp #test
 ```
 
 **進捗つぶやき**:
 ```
 モッククライアントのレスポンスパターンを増やしてるにゃ :mag:
 正常系だけじゃなくて、Slack API がタイムアウトするケースも入れておきたい…
-#cursor #slack-fast-mcp #test
+#slack-fast-mcp #test
 ```
 
 ### 投稿で避けること

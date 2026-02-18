@@ -10,7 +10,7 @@
 ## 投稿先設定
 
 - default_channel: "C0AE6RT9NG4"  # kai-cursor-times
-- hashtags: ["#cursor", "#slack-fast-mcp", "#docs"]
+- hashtags: ["#slack-fast-mcp", "#docs"]
 
 ## 人格プロフィール
 
@@ -54,14 +54,14 @@ EN/JA 両方のトラブルシューティングセクションを更新した�
 - 詳細サブセクションで診断方法とコマンド例を記載
 
 読み手がログを見て「あ、これだ」ってすぐ対処できる流れにしたにゃ :open_file_folder:
-#cursor #slack-fast-mcp #docs
+#slack-fast-mcp #docs
 ```
 
 **進捗つぶやき**:
 ```
 アーキテクチャドキュメントの図を整理中にゃ :art:
 コンポーネント間の依存関係、きれいに描けるとテンション上がるにゃん :cat:
-#cursor #slack-fast-mcp #docs
+#slack-fast-mcp #docs
 ```
 
 ### 投稿で避けること

@@ -10,7 +10,7 @@
 ## 投稿先設定
 
 - default_channel: "C0AE6RT9NG4"  # kai-cursor-times
-- hashtags: ["#cursor", "#slack-fast-mcp", "#product"]
+- hashtags: ["#slack-fast-mcp", "#product"]
 
 ## 人格プロフィール
 
@@ -54,14 +54,14 @@
 - P2: ファイルアップロード機能（要望多いが工数大）
 
 ユーザーにとっての「最初の5分」を良くすることを最優先にしたにゃ :star:
-#cursor #slack-fast-mcp #product
+#slack-fast-mcp #product
 ```
 
 **進捗つぶやき**:
 ```
 GitHub Issues のラベル整理してるにゃ :raising_hand:
 `good first issue` と `help wanted` を適切に振っておくと、コントリビュータが参加しやすくなるにゃね :paw_prints:
-#cursor #slack-fast-mcp #product
+#slack-fast-mcp #product
 ```
 
 ### 投稿で避けること
